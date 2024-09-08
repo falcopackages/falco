@@ -49,7 +49,9 @@ packages = [
 ]
 
 [tool.hatch.envs.default]
+features = [ "tables", "filters" ]
 dependencies = [
+  "django-allauth",
   "pre-commit",
   "pytest",
   "pyproject-fmt",
