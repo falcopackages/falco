@@ -1,0 +1,85 @@
+[build-system]
+build-backend = "hatchling.build"
+
+requires = [ "hatchling" ]
+
+[project]
+name = "falco-app"
+description = "Falco is a toolkit to build web apps with django faster."
+readme = "README.md"
+keywords = [
+  "cookiecutter",
+  "django",
+  "project-template",
+  "python",
+]
+license = "MIT"
+authors = [
+  { name = "Tobi DEGNON", email = "tobidegnon@proton.me" },
+]
+requires-python = ">=3.10"
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Framework :: Django :: 4",
+  "Framework :: Django :: 4.0",
+  "Framework :: Django :: 4.1",
+  "Framework :: Django :: 4.2",
+  "Framework :: Django :: 5.0",
+  "Intended Audience :: Developers",
+  "Natural Language :: English",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dynamic = [ "version" ]
+dependencies = [ "django" ]
+optional-dependencies = { tables = [ "django-tables2" ], filters = [ "django-filter" ] }
+
+urls.Documentation = "https://github.com/Tobi-De/falco#readme"
+urls.Issues = "https://github.com/Tobi-De/falco/issues"
+urls.Source = "https://github.com/Tobi-De/falco"
+
+[tool.hatch.build.targets.wheel]
+packages = [
+  "src/falco",
+]
+
+[tool.hatch.envs.default]
+dependencies = [
+  "pre-commit",
+  "pytest",
+  "pyproject-fmt",
+]
+
+[tool.hatch.version]
+path = "src/falco/__about__.py"
+
+[tool.hatch.envs.types]
+extra-dependencies = [
+  "mypy>=1.0.0",
+]
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:src/falco_app tests}"
+
+[tool.coverage.run]
+source_pkgs = [ "falco_app", "tests" ]
+branch = true
+parallel = true
+omit = [
+  "src/falco/__about__.py",
+]
+
+[tool.coverage.paths]
+falco_app = [ "src/falco", "*/falco-app/src/falco" ]
+tests = [ "tests", "*/falco/tests" ]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]

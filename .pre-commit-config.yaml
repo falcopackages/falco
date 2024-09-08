@@ -1,0 +1,42 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  - repo: local
+    hooks:
+      - id: hatch fmt
+        name: run hatch fmt
+        entry: hatch fmt
+        language: system
+        files: '\.py$'
+
+  - repo: https://github.com/myint/autoflake
+    rev: v2.3.1
+    hooks:
+      - id: autoflake
+        exclude: .*/__init__.py
+        args:
+          - --in-place
+          - --remove-all-unused-imports
+          - --expand-star-imports
+          - --remove-duplicate-keys
+          - --remove-unused-variables
+
+  - repo: https://github.com/asottile/reorder_python_imports
+    rev: v3.13.0
+    hooks:
+      - id: reorder-python-imports
+        args:
+          - "--application-directories=src/falco"
+
+  # - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+  #   rev: v2.13.0
+  #   hooks:
+  #     - id: pretty-format-toml
+  #       args: [ --autofix , --indent, '4' ]
+
+  # - repo: https://github.com/tox-dev/pyproject-fmt
+  #   rev: "2.1.3"
+  #   hooks:
+  #     - id: pyproject-fmt
+  #       args: ["pyproject.toml"]
+  #       exclude: ^(blueprints/|demo/)
