@@ -20,17 +20,29 @@
 [![PyPI - Versions from Framework Classifiers](https://img.shields.io/pypi/frameworkversions/django/falco-cli)](https://pypi.org/project/falco-cli/)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/falco-cli)](https://pypistats.org/packages/falco-cli)
 
-Falco is an opinionated toolkit designed to accelerate web app development with Django. It provides enough features 
-to get you to production in a few hours while maintaining a close resemblance to a standard Django project, ensuring you don't get overwhelmed. 
-Falco comes with CRUD view generation, integrations with `django-tables` and `django-filters`, simplified project versioning, automated 
-deployment to either a VPS or Docker-based platform and much more.
+Falco is an opinionated toolkit designed to speed up web app development with Django. It helps you get to production in just a few hours while keeping your project close to the standard Django structure, keeping things simple and manageable.
+
+
+## 🚀 Features
+
+- Django 5.1 and Python 3.11 support
+- Email Login via [django-allauth](https://django-allauth.readthedocs.io/en/latest/)
+- [CRUD View Generation](https://falco.oluwatobi.dev/the_cli/crud.html) for your models with optional integrations with `django-tables2` and `django-filters`.
+- Built-in **Project Versioning** with `bump2version`, Git integration, automatic changelog updates, and GitHub release creation.
+- **Automated Deployment**: Deploy your project to a VPS (using [fabric](https://www.fabfile.org/)) or Docker-based platform with ease.
+- Styling with [Tailwind CSS](https://tailwindcss.com/) (including [DaisyUI](https://daisyui.com/)) or [Bootstrap](https://getbootstrap.com/).
+- And much more! Check out the full list of packages [here](https://falco.oluwatobi.dev/the_cli/start_project/packages.html)
+
 
 ## Table of Contents
 
-- [Installation](#installation)
+- [🚀 Features](#-features)
+- [Table of Contents](#table-of-contents)
+- [📖 Installation](#-installation)
+- [♥️ Acknowledgements](#️-acknowledgements)
 - [License](#license)
 
-## Installation
+## 📖 Installation
 
 ```console
 pip install falco-cli
@@ -38,7 +50,7 @@ pip install falco-cli
 
 Read the [documentation](https://falco.oluwatobi.dev) for more information on how to use Falco.
 
-## Acknowledgements
+## ♥️ Acknowledgements
 
 Falco is inspired by (and borrows elements from) some excellent open source projects:
 
@@ -49,6 +61,8 @@ Falco is inspired by (and borrows elements from) some excellent open source proj
 - [django-unicorn](https://github.com/adamghill/django-unicorn) (Inspiration for the logo)
 - [neapolitan](https://github.com/carltongibson/neapolitan)
 - [django-base-site](https://github.com/epicserve/django-base-site)
+- [django-cptemplate](https://github.com/softwarecrafts/django-cptemplate)
+- [djangox](https://github.com/wsvincent/djangox)
 
 ## License
 
