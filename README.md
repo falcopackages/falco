@@ -1,13 +1,8 @@
-<p align="center">
-  <a href="https://falco.oluwatobi.dev/"><img src="https://raw.githubusercontent.com/Tobi-De/falco/main/docs/_static/falco-logo.svg" alt="falco logo" height="200"/></a>
-</p>
+# Falco
 
-<h1 align="center">
-  <a href="https://falco.oluwatobi.dev">Falco</a>
-  <p>An opinionated toolkit for a modern Django development experience</p>
-</h1>
+**An opinionated toolkit for building web apps faster with Django**
 
------
+<img align="right" width="170" height="150" src="https://raw.githubusercontent.com/Tobi-De/falco/main/docs/_static/falco-logo.svg">
 
 [![CI](https://github.com/Tobi-De/falco/actions/workflows/ci.yml/badge.svg)](https://github.com/Tobi-De/falco/actions/workflows/ci.yml)
 [![Publish Python Package](https://github.com/Tobi-De/falco/actions/workflows/publish.yml/badge.svg)](https://github.com/Tobi-De/falco/actions/workflows/publish.yml)
@@ -36,11 +31,12 @@ Falco is an opinionated toolkit designed to speed up web app development with Dj
 
 ## Table of Contents
 
-- [🚀 Features](#-features)
-- [Table of Contents](#table-of-contents)
-- [📖 Installation](#-installation)
-- [♥️ Acknowledgements](#️-acknowledgements)
-- [License](#license)
+- [Falco](#falco)
+  - [🚀 Features](#-features)
+  - [Table of Contents](#table-of-contents)
+  - [📖 Installation](#-installation)
+  - [♥️ Acknowledgements](#️-acknowledgements)
+  - [License](#license)
 
 ## 📖 Installation
 
