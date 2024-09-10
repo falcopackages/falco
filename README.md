@@ -22,6 +22,7 @@ Falco is an opinionated toolkit designed to speed up web app development with Dj
 
 - Django 5.1 and Python 3.11 support
 - Email Login via [django-allauth](https://django-allauth.readthedocs.io/en/latest/)
+- Integration with `htmx` using `django-htmx`
 - [CRUD View Generation](https://falco.oluwatobi.dev/the_cli/crud.html) for your models with optional integrations with `django-tables2` and `django-filters`.
 - Built-in **Project Versioning** with `bump2version`, Git integration, automatic changelog updates, and GitHub release creation.
 - **Automated Deployment**: Deploy your project to a VPS (using [fabric](https://www.fabfile.org/)) or Docker-based platform with ease.
