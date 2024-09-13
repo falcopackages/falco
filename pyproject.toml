@@ -36,7 +36,7 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dynamic = [ "version" ]
-dependencies = [ "django" ]
+dependencies = [ "django", "rich" ]
 optional-dependencies = { tables = [ "django-tables2" ], filters = [ "django-filter" ] }
 
 urls.Documentation = "https://github.com/Tobi-De/falco#readme"
