@@ -36,7 +36,7 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dynamic = [ "version" ]
-dependencies = [ "django" ]
+dependencies = [ "django", "tqdm" ]
 optional-dependencies = { tables = [ "django-tables2" ], filters = [ "django-filter" ] }
 
 urls.Documentation = "https://github.com/Tobi-De/falco#readme"
@@ -54,7 +54,19 @@ dependencies = [
   "django-allauth",
   "pre-commit",
   "pytest",
+  "pytest-xdist",
+  "pytest-cookies",
+  "pytest-django",
   "pyproject-fmt",
+]
+
+[tool.pytest.ini_options]
+addopts = "-n auto"
+filterwarnings = [
+  "ignore::DeprecationWarning",
+]
+testpaths = [
+  "tests",
 ]
 
 [tool.hatch.version]

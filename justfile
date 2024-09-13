@@ -23,3 +23,10 @@ upgrade:
     hatch fmt --formatter
     hatch run pyproject-fmt pyproject.toml
     hatch run pre-commit run reorder-python-imports -a
+
+@dj *ARGS:
+    cd demo && hatch run python manage.py {{ ARGS }}
+
+
+@test:
+    hatch run pytest
