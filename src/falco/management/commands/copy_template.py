@@ -29,16 +29,20 @@ from shutil import copy2
 from django.apps import apps
 from django.conf import settings
 from django.core.management.base import BaseCommand
+from django.core.management.base import CommandError
 from django.template import loader
+from django.template.exceptions import TemplateDoesNotExist
+from django.template.exceptions import TemplateSyntaxError
 
 
 def get_template_absolute_path(template_path):
     try:
         template = loader.get_template(template_path)
         return template.origin.name  # type: ignore[attr-defined]
-    except Exception as e:
-        print(f"Error occurred while getting template path: {e}")
-        return None
+    except TemplateDoesNotExist:
+        raise CommandError(f"Template {template_path} was not found")
+    except TemplateSyntaxError as e:
+        raise CommandError(f"Syntax error in template {template_path}: {e}")
 
 
 class Command(BaseCommand):
@@ -63,9 +67,6 @@ class Command(BaseCommand):
         destination = options.get("destination")
         # 2. Check that the source file exists - use template loaders for this
         source_file = get_template_absolute_path(source)
-        if source_file is None:
-            self.stdout.write(self.style.ERROR("Source Template doesn't exist"))
-            return
         base_dir = Path(settings.BASE_DIR)  # type: ignore[misc]
         # 4. if destination, then create Path object and copy
         if destination is not None:

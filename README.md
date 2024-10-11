@@ -6,14 +6,14 @@
 
 [![CI](https://github.com/Tobi-De/falco/actions/workflows/ci.yml/badge.svg)](https://github.com/Tobi-De/falco/actions/workflows/ci.yml)
 [![Publish Python Package](https://github.com/Tobi-De/falco/actions/workflows/publish.yml/badge.svg)](https://github.com/Tobi-De/falco/actions/workflows/publish.yml)
-[![Documentation](https://readthedocs.org/projects/falco-cli/badge/?version=latest&style=flat)](https://beta.readthedocs.org/projects/falco-cli/builds/?version=latest)
-[![pypi](https://badge.fury.io/py/falco-cli.svg)](https://pypi.org/project/falco-cli/)
+[![Documentation](https://readthedocs.org/projects/falco-app/badge/?version=latest&style=flat)](https://beta.readthedocs.org/projects/falco-app/builds/?version=latest)
+[![pypi](https://badge.fury.io/py/falco-app.svg)](https://pypi.org/project/falco-app/)
 [![Hatch project](https://img.shields.io/badge/%F0%9F%A5%9A-Hatch-4051b5.svg)](https://github.com/pypa/hatch)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Tobi-De/falco/blob/main/LICENSE)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/falco-cli)](https://pypi.org/project/falco-cli/)
-[![PyPI - Versions from Framework Classifiers](https://img.shields.io/pypi/frameworkversions/django/falco-cli)](https://pypi.org/project/falco-cli/)
-[![PyPI - Downloads](https://img.shields.io/pypi/dm/falco-cli)](https://pypistats.org/packages/falco-cli)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/falco-app)](https://pypi.org/project/falco-app/)
+[![PyPI - Versions from Framework Classifiers](https://img.shields.io/pypi/frameworkversions/django/falco-app)](https://pypi.org/project/falco-app/)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/falco-app)](https://pypistats.org/packages/falco-app)
 
 Falco is an opinionated toolkit designed to speed up web app development with Django. It helps you get to production in just a few hours while keeping your project close to the standard Django structure, keeping things simple and manageable.
 
@@ -43,7 +43,7 @@ Falco is an opinionated toolkit designed to speed up web app development with Dj
 ## 📖 Installation
 
 ```console
-pip install falco-cli
+pip install falco-app
 ```
 
 Read the [documentation](https://falco.oluwatobi.dev) for more information on how to use Falco.

@@ -25,11 +25,12 @@ class AppSettings:
     SENTRY_DISGARDED_PATHS = ["/health/"]
     SENTRY_PROFILE_RATE = 0.5
     SENTRY_TRACES_RATE = 0.5
+    WORK = {}
 
     @override
     def __getattribute__(self, __name: str) -> object:
         user_settings = getattr(settings, FALCO_SETTINGS_NAME, {})
-        return user_settings.get(__name, super().__getattribute__(__name))  # pyright: ignore[reportAny]
+        return user_settings.get(__name.lower(), super().__getattribute__(__name))  # pyright: ignore[reportAny]
 
 
 app_settings = AppSettings()

@@ -36,8 +36,8 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dynamic = [ "version" ]
-dependencies = [ "django", "rich" ]
-optional-dependencies = { tables = [ "django-tables2" ], filters = [ "django-filter" ] }
+dependencies = [ "django", "rich", "parso", "httpx"]
+optional-dependencies = { tables = [ "django-tables2" ], filters = [ "django-filter" ], ui = ["falco-ui"] }
 
 urls.Documentation = "https://github.com/Tobi-De/falco#readme"
 urls.Issues = "https://github.com/Tobi-De/falco/issues"
@@ -49,8 +49,9 @@ packages = [
 ]
 
 [tool.hatch.envs.default]
-features = [ "tables", "filters" ]
+features = [ "tables", "filters", "ui" ]
 dependencies = [
+  "falco-cli==0.27.0a0",
   "django-allauth",
   "pre-commit",
   "pytest",

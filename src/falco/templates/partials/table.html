@@ -1,0 +1,66 @@
+     <table class="min-w-full">
+                        <thead class="border text-gray-700 uppercase bg-gray-100 text-sm">
+                            {% with th_class="text-sm font-medium text-gray-900 border-r px-6 py-4 text-left" %}
+                            
+                                <tr>
+                                    {% for _, field_data in model_fields.items %}
+                                    <th scope="col" class=" {{ th_class }} ">{{ field_data.verbose_name }}</th>
+                                    {% endfor %}
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            
+                            {% endwith %}
+                        </thead>
+                        <tbody>
+                            {% with td_class="px-6 py-4 whitespace-nowrap text-sm font-medium border-r text-gray-900" %}
+                                {% for {{ model_name|lower }} in {{model_name_plural|lower}}_page  %}
+                                  
+                                    <tr class="border hover:bg-neutral-100">
+                                        {% for field_name, field_data in model_fields.items %}
+                                        {% if loop.first %}
+                                        <td class=" {{ td_class }} ">
+                                            <a class="font-bold hover:underline" href="{{ detail_view_url|safe }}">{{field_data.accessor}}</a>
+                                        </td>
+                                        {% elif field_data.class_name == "ImageField" or field_data.class_name == "FileField" %}
+                                        <td class=" {{ td_class }} ">
+                                            {% if  {{ model_name|lower }}.{{ field_name }}  %} 
+                                            <a class="hover:underline" href="{{ field_data.accessor|safe }}">{{field_data.verbose_name}}</a>
+                                            {% endif %}
+                                        </td>
+                                        {% elif field_data.class_name == "BooleanField" %}
+                                        <td class="{{ td_class }}">
+                                            {% if  {{ model_name|lower }}.{{ field_name }}  %}
+                                              {% heroicon_solid "check-circle" size="19" class="text-green-500 mx-auto" %}
+                                            {% else %}
+                                              {% heroicon_solid "x-circle" size="19" class="text-red-500 mx-auto" %}
+                                            {% endif %}
+                                          </td>
+                                        {% else %}
+                                        <td class=" {{ td_class }} ">{{field_data.accessor}}</td>
+                                        {% endif %}
+                                       {% endfor %}
+                                        <td class=" {{ td_class }}  flex gap-8">
+                                                <a class="hover:text-blue-500"
+                                                   href="{{ detail_view_url|safe }}">
+                                                   {% heroicon_outline "eye" size="18" %}
+                                                </a>
+                                                <a class="hover:text-blue-500"
+                                                   href="{{ update_view_url|safe }}">
+                                                   {% heroicon_outline "pencil-square" size="18" %}
+                                                </a>
+                                                <a
+                                                    class="cursor-pointer text-red-600 hover:text-red-500"
+                                                    hx-target="closest tr"
+                                                    hx-swap="outerHTML"
+                                                    hx-confirm="Are you sure you?"
+                                                    hx-delete="{{ delete_view_url|safe }}">
+                                                    {% heroicon_outline "trash" size="18" %}
+                                                </a>
+                                            </td>
+                                        </tr>
+                                            
+                                {% endfor %}
+                            {% endwith %}
+                        </tbody>
+                    </table>
+                

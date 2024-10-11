@@ -8,7 +8,6 @@ _default:
 # Install dependencies
 @bootstrap:
     hatch env create
-    hatch env create docs
 
 @clean:
     hatch env prune
@@ -23,3 +22,9 @@ upgrade:
     hatch fmt --formatter
     hatch run pyproject-fmt pyproject.toml
     hatch run pre-commit run reorder-python-imports -a
+
+@test:
+    hatch run pytest
+
+@dj *ARGS:
+    cd demo && hatch run python manage.py {{ ARGS }}
