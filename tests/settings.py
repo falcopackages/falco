@@ -21,18 +21,18 @@ DATABASES = {
 
 EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 
-INSTALLED_APPS = [
-    "django_twc_toolbox",
-    "django_twc_toolbox.crud",
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    # "django_tables2",
-    # "simple_history",
-    "template_partials",
-    # "tests.dummy",
-    # "tests.test_crud",
-]
+# INSTALLED_APPS = [
+#     "django_twc_toolbox",
+#     "django_twc_toolbox.crud",
+#     "django.contrib.admin",
+#     "django.contrib.auth",
+#     "django.contrib.contenttypes",
+#     # "django_tables2",
+#     # "simple_history",
+#     "template_partials",
+#     # "tests.dummy",
+#     # "tests.test_crud",
+# ]
 
 LOGGING_CONFIG = None
 

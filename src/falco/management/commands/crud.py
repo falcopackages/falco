@@ -316,7 +316,7 @@ class Command(CleanRepoOnlyCommand):
                 path('{prefix}', views.{list_view_name}, name='{list_view_name}'),
                 path('{prefix}new/', views.process_{view_name_prefix}form, name='{view_name_prefix}create'),
                 path('{prefix}<{django_model['path_converter']}:{django_model['lookup_field']}>/', views.{view_name_prefix}detail, name='{view_name_prefix}detail'),
-                path('{prefix}<{django_model['path_converter']}:{django_model['lookup_field']}>/edit/', views.process_form, name='{view_name_prefix}update'),
+                path('{prefix}<{django_model['path_converter']}:{django_model['lookup_field']}>/edit/', views.process_{view_name_prefix}form, name='{view_name_prefix}update'),
                 path('{prefix}<{django_model['path_converter']}:{django_model['lookup_field']}>/delete/', views.{view_name_prefix}delete, name='{view_name_prefix}delete'),
             """
 
