@@ -1,18 +1,20 @@
+from io import StringIO
 from pathlib import Path
 from typing import TypedDict
 
 import parso
-from django.apps import AppConfig, apps
+from django.apps import AppConfig
+from django.apps import apps
 from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import CommandError
-from django.template import Context, Template
-from io import StringIO
-
-
+from django.template import Context
+from django.template import Template
 from falco.management.base import CleanRepoOnlyCommand
 from falco.management.commands.copy_template import get_template_absolute_path
-from falco.utils import run_html_formatters, run_python_formatters, simple_progress
+from falco.utils import run_html_formatters
+from falco.utils import run_python_formatters
+from falco.utils import simple_progress
 
 IMPORT_START_COMMENT = "# IMPORTS:START"
 IMPORT_END_COMMENT = "# IMPORTS:END"
@@ -71,12 +73,8 @@ class Command(CleanRepoOnlyCommand):
             action="append",
             help="Fields to exclude from the views, forms and templates.",
         )
-        parser.add_argument(
-            "--only-python", action="store_true", help="Generate only python code."
-        )
-        parser.add_argument(
-            "--only-html", action="store_true", help="Generate only html code."
-        )
+        parser.add_argument("--only-python", action="store_true", help="Generate only python code.")
+        parser.add_argument("--only-html", action="store_true", help="Generate only html code.")
         parser.add_argument(
             "--entry-point",
             action="store_true",
@@ -123,9 +121,7 @@ class Command(CleanRepoOnlyCommand):
                 entry_point=entry_point,
             )
             dirs = settings.TEMPLATES[0].get("DIRS", [])
-            templates_dir = (
-                Path(dirs[0]) / app_label if dirs else Path(app.path) / "templates"
-            )
+            templates_dir = Path(dirs[0]) / app_label if dirs else Path(app.path) / "templates"
 
         django_models = (
             [m for m in all_django_models if m["name"].lower() == model_name.lower()]
@@ -153,9 +149,7 @@ class Command(CleanRepoOnlyCommand):
             updated_python_files.update(
                 self.generate_python_code(
                     app=app,
-                    blueprints=[
-                        Path(get_template_absolute_path(p)) for p in python_blueprints
-                    ],
+                    blueprints=[Path(get_template_absolute_path(p)) for p in python_blueprints],
                     contexts=blueprint_contexts,
                 )
             )
@@ -175,9 +169,7 @@ class Command(CleanRepoOnlyCommand):
                 self.generate_html_templates(
                     contexts=blueprint_contexts,
                     entry_point=entry_point,
-                    blueprints=[
-                        Path(get_template_absolute_path(p)) for p in html_blueprints
-                    ],
+                    blueprints=[Path(get_template_absolute_path(p)) for p in html_blueprints],
                     templates_dir=templates_dir,
                 )
             )
@@ -191,9 +183,7 @@ class Command(CleanRepoOnlyCommand):
                 run_html_formatters(str(file))
 
         display_names = ", ".join(m.get("name") for m in django_models)
-        self.stdout.write(
-            self.style.SUCCESS(f"CRUD views generated for: {display_names}")
-        )
+        self.stdout.write(self.style.SUCCESS(f"CRUD views generated for: {display_names}"))
 
     @classmethod
     def parse_model_path(cls, model_path: str):
@@ -207,9 +197,7 @@ class Command(CleanRepoOnlyCommand):
         return app_label, model_name
 
     @classmethod
-    def get_models_data(
-        cls, app_label: str, excluded_fields: list[str], *, entry_point: bool
-    ) -> "list[DjangoModel]":
+    def get_models_data(cls, app_label: str, excluded_fields: list[str], *, entry_point: bool) -> "list[DjangoModel]":
         models = apps.get_app_config(app_label).get_models()
         file_fields = ("ImageField", "FileField")
         dates_fields = ("DateField", "DateTimeField", "TimeField")
@@ -220,9 +208,7 @@ class Command(CleanRepoOnlyCommand):
             if entry_point:
                 name_plural = app_label.lower()
             else:
-                name_plural = (
-                    f"{name.replace('y', 'ies')}" if name.endswith("y") else f"{name}s"
-                )
+                name_plural = f"{name.replace('y', 'ies')}" if name.endswith("y") else f"{name}s"
 
             verbose_name = model._meta.verbose_name  # noqa
             verbose_name_plural = model._meta.verbose_name_plural  # noqa
@@ -232,8 +218,7 @@ class Command(CleanRepoOnlyCommand):
                     "editable": field.editable,
                     "class_name": field.__class__.__name__,
                     "accessor": "{{"
-                                f"{name_lower}.{field.name}"
-                                + (".url }}" if field.__class__.__name__ in file_fields else "}}"),
+                    f"{name_lower}.{field.name}" + (".url }}" if field.__class__.__name__ in file_fields else "}}"),
                 }
                 for field in model._meta.fields  # noqa
                 if field.name not in excluded_fields
@@ -249,12 +234,9 @@ class Command(CleanRepoOnlyCommand):
                 "obj_accessor": "{{" + name_lower + "}}",
                 "verbose_name": verbose_name,
                 "verbose_name_plural": verbose_name_plural,
-                "has_file_field": any(
-                    f["class_name"] in file_fields for f in fields.values()
-                ),
+                "has_file_field": any(f["class_name"] in file_fields for f in fields.values()),
                 "has_editable_date_field": any(
-                    f["class_name"] in dates_fields and f["editable"]
-                    for f in fields.values()
+                    f["class_name"] in dates_fields and f["editable"] for f in fields.values()
                 ),
             }
 
@@ -270,9 +252,7 @@ class Command(CleanRepoOnlyCommand):
         updated_files = []
 
         for blueprint in blueprints:
-            imports_template, code_template = extract_python_file_templates(
-                blueprint.read_text()
-            )
+            imports_template, code_template = extract_python_file_templates(blueprint.read_text())
             # blueprints python files end in .py.dtl
             file_name_without_jinja = ".".join(blueprint.name.split(".")[:-1])
             file_to_write_to = Path(app.path) / file_name_without_jinja
@@ -284,15 +264,11 @@ class Command(CleanRepoOnlyCommand):
                 imports_content += render_from_string(imports_template, context)
                 code_content += render_from_string(code_template, context)
 
-            file_to_write_to.write_text(
-                imports_content + file_to_write_to.read_text() + code_content
-            )
+            file_to_write_to.write_text(imports_content + file_to_write_to.read_text() + code_content)
             updated_files.append(file_to_write_to)
 
         model_name = contexts[0]["model"]["name"] if len(contexts) == 1 else None
-        updated_files.append(
-            self.register_models_in_admin(app=app, model_name=model_name)
-        )
+        updated_files.append(self.register_models_in_admin(app=app, model_name=model_name))
         return updated_files
 
     @simple_progress("Generating urls")
@@ -306,9 +282,7 @@ class Command(CleanRepoOnlyCommand):
         urls_content = ""
         for django_model in django_models:
             model_name_lower = django_model["name_lower"]
-            urlsafe_model_verbose_name_plural = (
-                django_model["verbose_name_plural"].lower().replace(" ", "-")
-            )
+            urlsafe_model_verbose_name_plural = django_model["verbose_name_plural"].lower().replace(" ", "-")
             view_name_prefix = "" if entry_point else f"{model_name_lower}_"
             list_view_name = "index" if entry_point else f"{model_name_lower}_list"
             prefix = "" if entry_point else f"{urlsafe_model_verbose_name_plural}/"
@@ -357,36 +331,24 @@ urlpatterns = [
             for context in contexts:
                 model_name_lower = context["model"]["name_lower"]
                 if entry_point:
-                    new_filename = (
-                        "index.html"
-                        if blueprint.name == "list.html"
-                        else blueprint.name
-                    )
+                    new_filename = "index.html" if blueprint.name == "list.html" else blueprint.name
                 else:
                     new_filename = f"{model_name_lower}_{blueprint.name}"
                 file_to_write_to = templates_dir / new_filename
                 file_to_write_to.touch(exist_ok=True)
-                views_content = render_from_string(
-                    blueprint.read_text(), context=context
-                )
+                views_content = render_from_string(blueprint.read_text(), context=context)
 
                 file_to_write_to.write_text(views_content)
                 updated_files.append(file_to_write_to)
 
         return updated_files
 
-    def register_models_in_admin(
-        self, app: AppConfig, model_name: str | None = None
-    ) -> Path:
+    def register_models_in_admin(self, app: AppConfig, model_name: str | None = None) -> Path:
         admin_file = Path(app.path) / "admin.py"
 
         # Skip further processing if model_name is not specified and file is non-empty
         if not model_name and admin_file.exists() and admin_file.stat().st_size > 0:
-            self.stdout.write(
-                self.style.WARNING(
-                    "Skipping admin registration as the file is not empty."
-                )
-            )
+            self.stdout.write(self.style.WARNING("Skipping admin registration as the file is not empty."))
             return admin_file
 
         admin_file.touch(exist_ok=True)
@@ -406,9 +368,7 @@ urlpatterns = [
         existing_code = admin_file.read_text()
 
         if model_name and model_name.title() in existing_code:
-            self.stdout.write(
-                self.style.WARNING(f"Model {model_name} is already registered.")
-            )
+            self.stdout.write(self.style.WARNING(f"Model {model_name} is already registered."))
             return admin_file
 
         admin_file.write_text(existing_code + admin_code)
@@ -437,9 +397,7 @@ def register_app_urls(app: AppConfig) -> Path:
     root_url = root_url.strip().replace(".", "/")
     root_url_path = Path(f"{root_url}.py")
     module = parso.parse(root_url_path.read_text())
-    new_path = parso.parse(
-        f"path('{app.label}/', include('{app.name}.urls', namespace='{app.label}'))"
-    )
+    new_path = parso.parse(f"path('{app.label}/', include('{app.name}.urls', namespace='{app.label}'))")
 
     for node in module.children:
         try:
@@ -510,12 +468,8 @@ def render_from_string(template_string: str, context: dict) -> str:
 
 
 def extract_python_file_templates(file_content: str) -> tuple[str, str]:
-    imports_template = extract_content_from(
-        file_content, IMPORT_START_COMMENT, IMPORT_END_COMMENT
-    )
-    code_template = extract_content_from(
-        file_content, CODE_START_COMMENT, CODE_END_COMMENT
-    )
+    imports_template = extract_content_from(file_content, IMPORT_START_COMMENT, IMPORT_END_COMMENT)
+    code_template = extract_content_from(file_content, CODE_START_COMMENT, CODE_END_COMMENT)
     return imports_template, code_template
 
 

@@ -5,10 +5,10 @@ from pathlib import Path
 
 import httpx
 from django.conf import settings
-from django.core.management.base import BaseCommand, CommandError
-from httpx import codes
-
+from django.core.management.base import BaseCommand
+from django.core.management.base import CommandError
 from falco.utils import simple_progress
+from httpx import codes
 
 HTMX_DOWNLOAD_URL = "https://unpkg.com/htmx.org@{version}/dist/htmx.min.js"
 HTMX_GH_RELEASE_LATEST_URL = "https://api.github.com/repos/bigskysoftware/htmx/releases/latest"
@@ -19,8 +19,9 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("version", type=str, default="latest")
-        parser.add_argument("-o", "--output-dir", type=Path, default=None,
-                            help="The directory to write the downloaded file to.")
+        parser.add_argument(
+            "-o", "--output-dir", type=Path, default=None, help="The directory to write the downloaded file to."
+        )
 
     def handle(self, *args, **options):
         version = options["version"]
@@ -36,7 +37,11 @@ class Command(BaseCommand):
 
         filepath = output_dir / "htmx.min.js"
         filepath.write_text(content)
-        self.stdout.write(self.style.SUCCESS(f"htmx version {version} downloaded successfully to {filepath}", ))
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"htmx version {version} downloaded successfully to {filepath}",
+            )
+        )
 
 
 def get_latest_tag() -> str:

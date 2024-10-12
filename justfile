@@ -16,6 +16,10 @@ _default:
 upgrade:
     hatch run hatch-pip-compile --upgrade --all
 
+# Run sphinx autobuild
+@docs-serve:
+    hatch run docs:sphinx-autobuild docs docs/_build/html --port 8002
+
 # Run all formatters
 @fmt:
     just --fmt --unstable

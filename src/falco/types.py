@@ -7,10 +7,10 @@ if importlib.util.find_spec("django_htmx"):
     # TODO: should look for the middleware, not the package
     from django_htmx.middleware import HtmxDetails
 
-
     class HttpRequest(HttpRequestBase):
         htmx: HtmxDetails
 else:
+
     class HttpRequest(HttpRequestBase):
         pass
 

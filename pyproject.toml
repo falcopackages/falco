@@ -36,8 +36,8 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dynamic = [ "version" ]
-dependencies = [ "django", "rich", "parso", "httpx"]
-optional-dependencies = { filters = [ "django-filter" ], ui = ["falco-ui"], all = ["django-filter", "falco-ui"] }
+dependencies = [ "django", "httpx", "parso", "rich" ]
+optional-dependencies = { filters = [ "django-filter" ], ui = [ "falco-ui" ], all = [ "django-filter", "falco-ui" ] }
 
 urls.Documentation = "https://github.com/falcopackages/falco#readme"
 urls.Issues = "https://github.com/falcopackages/falco/issues"
@@ -74,6 +74,31 @@ extra-dependencies = [
 [tool.hatch.envs.types.scripts]
 check = "mypy --install-types --non-interactive {args:src/falco_app tests}"
 
+[tool.hatch.envs.docs]
+dependencies = [
+  "sphinx",
+  "sphinx-autobuild",
+  "myst-parser",
+  "shibuya",
+  "sphinx-design",
+  "sphinx-tabs",
+  "sphinx-copybutton",
+  "sphinx-togglebutton",
+  "sphinxcontrib-mermaid",
+  "jupyter-sphinx",
+  "ipykernel",
+  "sphinx-github-changelog",
+  "sphinx-docsearch",
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "demo.settings"
+addopts = "--create-db -n auto --dist loadfile --doctest-modules"
+norecursedirs = ".* bin build dist *.egg htmlcov logs node_modules templates venv"
+python_files = "tests.py test_*.py *_tests.py"
+pythonpath = "src demo"
+testpaths = [ "tests" ]
+
 [tool.coverage.run]
 source_pkgs = [ "falco_app", "tests" ]
 branch = true
@@ -92,13 +117,3 @@ exclude_lines = [
   "if __name__ == .__main__.:",
   "if TYPE_CHECKING:",
 ]
-
-
-[tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "demo.settings"
-addopts = "--create-db -n auto --dist loadfile --doctest-modules"
-norecursedirs = ".* bin build dist *.egg htmlcov logs node_modules templates venv"
-python_files = "tests.py test_*.py *_tests.py"
-pythonpath = "src demo"
-testpaths = ["tests"]
-

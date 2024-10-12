@@ -1,8 +1,8 @@
 from pathlib import Path
 
 from django.conf import settings
-from django.core.management.base import BaseCommand, CommandError
-
+from django.core.management.base import BaseCommand
+from django.core.management.base import CommandError
 from falco.utils import clean_git_repo
 
 
@@ -21,11 +21,8 @@ def exit_if_debug_false():
 
 
 class CleanRepoOnlyCommand(BaseCommand):
-
     def add_arguments(self, parser):
-        parser.add_argument(
-            "--allow-dirty", action="store_true", help="Allow dirty git repo."
-        )
+        parser.add_argument("--allow-dirty", action="store_true", help="Allow dirty git repo.")
         super().add_arguments(parser)
 
     def handle(self, *args, **options):

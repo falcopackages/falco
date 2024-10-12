@@ -2,7 +2,9 @@ import json
 import urllib.request
 from functools import wraps
 
-from rich.progress import Progress, SpinnerColumn, TextColumn
+from rich.progress import Progress
+from rich.progress import SpinnerColumn
+from rich.progress import TextColumn
 
 
 def with_progress(description, pass_progress=True):
@@ -16,9 +18,7 @@ def with_progress(description, pass_progress=True):
             ) as progress:
                 task = progress.add_task(description, total=None)
                 if pass_progress:
-                    kwargs["progress"] = lambda desc: progress.update(
-                        task, description=desc
-                    )
+                    kwargs["progress"] = lambda desc: progress.update(task, description=desc)
                 result = func(*args, **kwargs)
                 progress.update(task, completed=True)
                 progress.console.print(f"[green]{description} completed!")

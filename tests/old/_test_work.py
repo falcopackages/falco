@@ -1,7 +1,7 @@
 import pytest
-from falco_cli.commands.work import default_address
-from falco_cli.commands.work import default_server_cmd
-from falco_cli.commands.work import Work
+from falco.management.commands.work import default_address
+from falco.management.commands.work import default_server_cmd
+from falco.management.commands.work import Work
 from falco_cli.config import write_falco_config
 
 

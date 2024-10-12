@@ -5,7 +5,6 @@ from multiprocessing import Pool
 from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
-
 from falco.conf import app_settings
 
 
@@ -13,8 +12,9 @@ class Command(BaseCommand):
     help = "Run every dev process needed in one command"
 
     def add_arguments(self, parser):
-        parser.add_argument("address", type=str, nargs="?", default="127.0.0.1:8000",
-                            help="Address to run the django server on")
+        parser.add_argument(
+            "address", type=str, nargs="?", default="127.0.0.1:8000", help="Address to run the django server on"
+        )
 
     def handle(self, *args, **options):
         address = options["address"]
@@ -50,7 +50,10 @@ class Command(BaseCommand):
 
         manager = Manager()
         for name, cmd in commands.items():
-            manager.add_process(name, cmd, )
+            manager.add_process(
+                name,
+                cmd,
+            )
 
         try:
             manager.loop()

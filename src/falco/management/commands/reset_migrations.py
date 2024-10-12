@@ -1,8 +1,8 @@
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.db import connection
-
-from falco.management.base import exit_if_debug_false, get_apps_dir
+from falco.management.base import exit_if_debug_false
+from falco.management.base import get_apps_dir
 from falco.management.commands.rm_migrations import Command as RmMigrationsCommand
 from falco.utils import simple_progress
 

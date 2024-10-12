@@ -1,5 +1,4 @@
 from django.db import models
-
 from falco.models import TimeStamped
 
 
@@ -11,6 +10,7 @@ class Book(TimeStamped):
     slug = models.SlugField()
     description = models.TextField()
     published_at = models.DateField()
+    on_going = models.BooleanField(default=True)
     cover_art = models.FileField(upload_to="covers")
     author = models.ForeignKey("books.Author", on_delete=models.CASCADE)
 

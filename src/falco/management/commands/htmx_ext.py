@@ -1,14 +1,15 @@
 from pathlib import Path
 
 import httpx
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
+from django.core.management.base import CommandError
+from falco.management.commands.htmx import default_htmx_output_folder
+from falco.management.commands.htmx import network_request_with_progress
+from falco.utils import simple_progress
 from rich import print as rich_print
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
-
-from falco.management.commands.htmx import default_htmx_output_folder, network_request_with_progress
-from falco.utils import simple_progress
 
 REGISTRY_URL = "https://htmx-extensions.oluwatobi.dev/extensions.json"
 
@@ -79,7 +80,5 @@ class Command(BaseCommand):
 
     @classmethod
     def read_registry(cls):
-        with network_request_with_progress(
-            REGISTRY_URL, "Loading extensions registry"
-        ) as response:
+        with network_request_with_progress(REGISTRY_URL, "Loading extensions registry") as response:
             return response.json()

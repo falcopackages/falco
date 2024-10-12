@@ -28,9 +28,11 @@ from shutil import copy2
 
 from django.apps import apps
 from django.conf import settings
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
+from django.core.management.base import CommandError
 from django.template import loader
-from django.template.exceptions import TemplateDoesNotExist, TemplateSyntaxError
+from django.template.exceptions import TemplateDoesNotExist
+from django.template.exceptions import TemplateSyntaxError
 
 
 def get_template_absolute_path(template_path):

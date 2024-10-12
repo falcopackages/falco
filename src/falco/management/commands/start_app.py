@@ -2,11 +2,12 @@ from pathlib import Path
 
 import parso
 from django.conf import settings
-from django.core.management import CommandError, call_command
+from django.core.management import call_command
+from django.core.management import CommandError
 from django.core.management.base import BaseCommand
-
 from falco.management.base import get_apps_dir
-from falco.utils import run_python_formatters, simple_progress
+from falco.utils import run_python_formatters
+from falco.utils import simple_progress
 
 
 class Command(BaseCommand):
@@ -19,7 +20,7 @@ class Command(BaseCommand):
         app_name = options["app_name"]
         apps_dir = get_apps_dir()
         app_dir = apps_dir / app_name
-        final_app_name = f"{apps_dir.name}.{app_name}".strip('.').lower()
+        final_app_name = f"{apps_dir.name}.{app_name}".strip(".").lower()
 
         try:
             app_dir.mkdir()
@@ -50,8 +51,7 @@ class {model_name}(TimeStamped):
 
     def __str__(self):
         return self.name
-"""
-                                   )
+""")
 
             (app_dir / "admin.py").write_text("")
 

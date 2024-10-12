@@ -7,12 +7,12 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.views.decorators.cache import cache_control
 from django.views.decorators.http import require_GET
-
 from falco.conf import app_settings
 from falco.decorators import login_not_required
 
 if TYPE_CHECKING:
     from django.http import HttpRequest, HttpResponse
+
 
 @require_GET
 @cache_control(max_age=0 if settings.DEBUG else app_settings.CACHE_TIME_ROBOTS_TXT, immutable=True, public=True)

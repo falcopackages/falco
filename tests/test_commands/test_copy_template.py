@@ -4,9 +4,9 @@ from io import StringIO
 
 import pytest
 from django.apps import apps
-from django.core.management import call_command, CommandError
+from django.core.management import call_command
+from django.core.management import CommandError
 from django.test import override_settings
-
 from falco.management.commands.copy_template import Command
 from falco.management.commands.copy_template import (
     get_template_absolute_path,
@@ -97,9 +97,7 @@ def test_copy_template_without_destination(tmp_path, create_template):
     assert copied_template.read_text() == "<p>Source Template</p>"
 
 
-def test_copy_template_without_destination_and_templates_setting(
-    tmp_path, create_template
-):
+def test_copy_template_without_destination_and_templates_setting(tmp_path, create_template):
     create_template("source_template.html", "<p>Source Template</p>")
 
     with override_settings(BASE_DIR=tmp_path, TEMPLATES=[]):
