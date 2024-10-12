@@ -52,7 +52,7 @@ def {{detail_view_name}}(request: HttpRequest, {{ model.lookup_field }}):{% endi
 @login_required
 def process_{{ view_name_prefix }}form(request: AuthenticatedHttpRequest,  {{ model.lookup_field }}):{% else %}
 def process_{{ view_name_prefix }}form(request: HttpRequest, {{ model.lookup_field }} = None):{% endif %}
-    instance = get_object_or_404({{ model.name }}.objects, {{ model.lookup_field }}= {{ model.lookup_field }}) if {{ model.lookup_field }} else None {% if model.has_file_fields %}
+    instance = get_object_or_404({{ model.name }}.objects, {{ model.lookup_field }}= {{ model.lookup_field }}) if {{ model.lookup_field }} else None {% if model.has_file_field %}
     form = {{model.name}}Form(request.POST or None, request.FILES or None, instance=instance) {% else %}
     form = {{model.name}}Form(request.POST or None, instance=instance) {% endif %}
     if request.method == "POST" and form.is_valid():
