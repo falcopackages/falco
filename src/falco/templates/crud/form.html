@@ -7,12 +7,12 @@
    <section class="flex justify-between">
         <h1 class="text-lg font-bold py-4">
          {% verbatim %}
-          {% if instance %} Edit {{ instance }} {% else %} Create {% endverbatim %} {{ model_verbose_name|capfirst }} {% verbatim %} {% endif %}
+          {% if instance %} Edit {{ instance }} {% else %} Create {% endverbatim %} {{ model.verbose_name|capfirst }} {% verbatim %} {% endif %}
          {% endverbatim %}
         </h1>
-        <a href="{{list_view_url|safe}}" class="text-blue-600 hover:underline hover:text-blue-500">All {{model_verbose_name_plural|capfirst}}</a>
+        <a href="{{list_view_url|safe}}" class="text-blue-600 hover:underline hover:text-blue-500">All {{model.verbose_name_plural|capfirst}}</a>
     </section>
-    <form method="post" {% if model_has_file_fields %} enctype="multipart/form-data" {% endif %}>
+    <form method="post" {% if model.has_file_field %} enctype="multipart/form-data" {% endif %}>
         {% verbatim %}
         {% csrf_token %}
         {{form|crispy}}

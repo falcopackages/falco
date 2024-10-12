@@ -5,15 +5,15 @@
 
     <section class="flex justify-between">
 {% endverbatim %}
-        <h1 class="text-lg font-bold">{{ model_verbose_name|capfirst }} - {{ model_obj_accessor }} </h1>
+        <h1 class="text-lg font-bold">{{ model.verbose_name|capfirst }} - {{ model.obj_accessor }} </h1>
 
         <a href="{{list_view_url|safe}}" class="text-blue-600 hover:underline hover:text-blue-500">
-            All {{model_verbose_name_plural|capfirst}}
+            All {{model.verbose_name_plural|capfirst}}
         </a>
     </section>
 
     <ul class="py-5">
-        {% for field_data in model_fields.values %}
+        {% for field_data in model.fields.values %}
             <li>
                 <span class="font-bold">{{ field_data.verbose_name }}:</span> {{ field_data.accessor }}
             </li>

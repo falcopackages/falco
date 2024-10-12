@@ -1,7 +1,6 @@
 <nav class="flex justify-end py-4">
-  <ul class="flex list-reset border border-grey-light rounded"
-      hx-target="#table" hx-swap="outerHTML" hx-push-url="true"
-  >
+  <ul class="flex list-reset border border-grey-light rounded" hx-target="#table" hx-swap="outerHTML"
+      hx-push-url="true">
     {% with page_class="cursor-pointer block px-3 py-2 hover:text-white hover:bg-blue-500 border-r border-grey-light" %}
       {% if page.has_previous %}
         <li>
@@ -18,7 +17,7 @@
           <li>
             <a class="{{ page_class }}" hx-get="?page={{ num }}">{{ num }}</a>
           </li>
-        {% elif num >page.number|add:'-3' and num <page.number|add:'3' %}
+        {% elif num > page.number|add:'-3' and num < page.number|add:'3' %}
           <li>
             <a class="{{ page_class }}" hx-get="?page={{ num }}">{{ num }}</a>
           </li>
@@ -39,4 +38,4 @@
     {% endwith %}
   </ul>
 </nav>
-    
+

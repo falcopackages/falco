@@ -2,19 +2,16 @@ from pathlib import Path
 from typing import TypedDict
 
 import parso
-from django.apps import AppConfig
-from django.apps import apps
+from django.apps import AppConfig, apps
 from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import CommandError
-from django.template import Context
-from django.template import Template
+from django.template import Context, Template
 
 from falco.management.base import CleanRepoOnlyCommand
-from falco.utils import run_html_formatters
-from falco.utils import run_python_formatters
-from falco.utils import simple_progress
-from .copy_template import get_template_absolute_path
+from falco.utils import run_html_formatters, run_python_formatters, simple_progress
+
+from falco.management.commands.copy_template import get_template_absolute_path
 
 IMPORT_START_COMMENT = "# IMPORTS:START"
 IMPORT_END_COMMENT = "# IMPORTS:END"
@@ -31,10 +28,14 @@ class DjangoField(TypedDict):
 
 class DjangoModel(TypedDict):
     name: str
+    name_lower: str
     name_plural: str
+    lookup_field: str
+    path_converter: str
     verbose_name: str
     verbose_name_plural: str
     fields: dict[str, DjangoField]
+    obj_accessor: str
     has_file_field: bool
     has_editable_date_field: bool
 
@@ -42,15 +43,8 @@ class DjangoModel(TypedDict):
 class BlueprintContext(TypedDict):
     login_required: bool
     app_label: str
-    model_name: str
-    model_name_plural: str
-    model_name_lower: str
-    model_verbose_name: str
-    model_verbose_name_plural: str
-    model_obj_accessor: str
-    model_has_file_fields: bool
-    model_has_editable_date_fields: bool
-    model_fields: dict[str, DjangoField]
+    model: DjangoModel
+    view_name_prefix:str
     entry_point: bool
     list_view_url: str
     create_view_url: str
@@ -98,7 +92,7 @@ class Command(CleanRepoOnlyCommand):
             help="Run makemigrations and migrate beforehand",
         )
 
-    def handle(self, *args, **options):
+    def handle(self, *_, **options):
         model_path = options["model_path"]
         excluded_fields = options["exclude"] or []
         only_python = options["only_python"]
@@ -110,7 +104,8 @@ class Command(CleanRepoOnlyCommand):
         app_label, model_name = self.parse_model_path(model_path)
 
         if entry_point and not model_name:
-            raise CommandError("The --entry-point option requires a full model path.")
+            msg =  "The --entry-point option requires a full model path."
+            raise CommandError(msg)
 
         if migrate:
             with simple_progress("Running migrations"):
@@ -227,8 +222,8 @@ class Command(CleanRepoOnlyCommand):
                     f"{name.replace('y', 'ies')}" if name.endswith("y") else f"{name}s"
                 )
 
-            verbose_name = model._meta.verbose_name
-            verbose_name_plural = model._meta.verbose_name_plural
+            verbose_name = model._meta.verbose_name # noqa
+            verbose_name_plural = model._meta.verbose_name_plural # noqa
             fields: dict[str, DjangoField] = {
                 field.name: {
                     "verbose_name": field.verbose_name,
@@ -238,13 +233,18 @@ class Command(CleanRepoOnlyCommand):
                                 f"{name_lower}.{field.name}"
                                 + (".url }}" if field.__class__.__name__ in file_fields else "}}"),
                 }
-                for field in model._meta.fields
+                for field in model._meta.fields # noqa
                 if field.name not in excluded_fields
             }
+            name_lower = name.lower()
             return {
                 "name": name,
+                "name_lower": name_lower,
                 "name_plural": name_plural,
+                "lookup_field": getattr(model, "lookup_field", "pk"),
+                "path_converter": getattr(model, "path_converter", "int"),
                 "fields": fields,
+                "obj_accessor": "{{" + name_lower + "}}",
                 "verbose_name": verbose_name,
                 "verbose_name_plural": verbose_name_plural,
                 "has_file_field": any(
@@ -281,20 +281,20 @@ class Command(CleanRepoOnlyCommand):
             imports_content, code_content = "", ""
 
             for context in contexts:
-                model_name_lower = context["model_name"].lower()
+                # model_name_lower = context["model"]["name_lower"]
                 imports_content += render_from_string(imports_template, context)
                 code_content += render_from_string(code_template, context)
-
-                if entry_point:
-                    code_content = code_content.replace(f"{model_name_lower}_", "")
-                    code_content = code_content.replace("list", "index")
+                #
+                # if entry_point:
+                #     code_content = code_content.replace(f"{model_name_lower}_", "")
+                #     code_content = code_content.replace("list", "index")
 
             file_to_write_to.write_text(
                 imports_content + file_to_write_to.read_text() + code_content
             )
             updated_files.append(file_to_write_to)
 
-        model_name = contexts[0]["model_name"] if len(contexts) == 1 else None
+        model_name = contexts[0]["model"]["name"] if len(contexts) == 1 else None
         updated_files.append(
             self.register_models_in_admin(app=app, model_name=model_name)
         )
@@ -310,24 +310,20 @@ class Command(CleanRepoOnlyCommand):
     ) -> list[Path]:
         urls_content = ""
         for django_model in django_models:
-            model_name_lower = django_model["name"].lower()
+            model_name_lower = django_model["name_lower"]
             urlsafe_model_verbose_name_plural = (
                 django_model["verbose_name_plural"].lower().replace(" ", "-")
             )
-            prefix = urlsafe_model_verbose_name_plural
+            view_name_prefix = "" if entry_point else f"{model_name_lower}_"
+            list_view_name = "index" if entry_point else f"{model_name_lower}_list"
+            prefix = "" if entry_point else f"{urlsafe_model_verbose_name_plural}/"
             urls_content += f"""
-                path('{prefix}/', views.{model_name_lower}_list, name='{model_name_lower}_list'),
-                path('{prefix}/create/', views.process_form, name='{model_name_lower}_create'),
-                path('{prefix}/<int:pk>/', views.{model_name_lower}_detail, name='{model_name_lower}_detail'),
-                path('{prefix}/<int:pk>/update/', views.process_form, name='{model_name_lower}_update'),
-                path('{prefix}/<int:pk>/delete/', views.{model_name_lower}_delete, name='{model_name_lower}_delete'),
+                path('{prefix}', views.{list_view_name}, name='{list_view_name}'),
+                path('{prefix}create/', views.process_{view_name_prefix}form, name='{view_name_prefix}create'),
+                path('{prefix}<int:pk>/', views.{view_name_prefix}detail, name='{view_name_prefix}detail'),
+                path('{prefix}<int:pk>/update/', views.process_form, name='{view_name_prefix}update'),
+                path('{prefix}<int:pk>/delete/', views.{view_name_prefix}delete, name='{view_name_prefix}delete'),
             """
-            if entry_point:
-                urls_content = urls_content.replace(
-                    f"{urlsafe_model_verbose_name_plural}/", ""
-                )
-                urls_content = urls_content.replace("list", "index")
-                urls_content = urls_content.replace(f"{model_name_lower}_", "")
 
         app_urls = Path(app.path) / "urls.py"
         updated_files = [app_urls]
@@ -336,7 +332,18 @@ class Command(CleanRepoOnlyCommand):
             app_urls.write_text(app_urls.read_text() + urlpatterns)
         else:
             app_urls.touch()
-            app_urls.write_text(initial_urls_content(app.label, urls_content))
+            app_urls.write_text(
+            f"""
+from django.urls import path
+from . import views
+
+app_name = "{app.label}"
+
+urlpatterns = [
+{urls_content}
+]
+        """
+            )
             updated_files.append(register_app_urls(app=app))
         return updated_files
 
@@ -353,7 +360,7 @@ class Command(CleanRepoOnlyCommand):
         templates_dir.mkdir(exist_ok=True, parents=True)
         for blueprint in blueprints:
             for context in contexts:
-                model_name_lower = context["model_name"].lower()
+                model_name_lower = context["model"]["name_lower"]
                 if entry_point:
                     new_filename = "index.html" if blueprint.name == "list.html" else blueprint.name
                 else:
@@ -362,9 +369,11 @@ class Command(CleanRepoOnlyCommand):
                 file_to_write_to.touch(exist_ok=True)
                 views_content = render_from_string(blueprint.read_text(), context=context)
 
-                if entry_point:
-                    views_content = views_content.replace(f"{model_name_lower}_", "")
-                    views_content = views_content.replace("list", "index")
+                # if entry_point:
+                #     views_content = views_content.replace(f"{model_name_lower}_", "")
+                #     views_content = views_content.replace("list", "index")
+
+
                 file_to_write_to.write_text(views_content)
                 updated_files.append(file_to_write_to)
 
@@ -446,18 +455,6 @@ def extract_content_from(text: str, start_comment: str, end_comment: str):
     return text[start_index:end_index]
 
 
-def initial_urls_content(app_label: str, urls_content: str) -> str:
-    return f"""
-from django.urls import path
-from . import views
-
-app_name = "{app_label}"
-
-urlpatterns = [
-{urls_content}
-]
-        """
-
 
 def register_app_urls(app: AppConfig) -> Path:
     root_url = settings.ROOT_URLCONF
@@ -490,25 +487,42 @@ def register_app_urls(app: AppConfig) -> Path:
 def build_blueprint_context(
     app_label: str,
     django_model: DjangoModel,
+    *,
     entry_point: bool,
     login_required: bool,
 ) -> BlueprintContext:
-    model_name_lower = django_model["name"].lower()
+    model_name_lower = django_model["name_lower"]
+    view_name_prefix = "" if entry_point else f"{model_name_lower}_"
+    list_view_name = "index" if entry_point else f"{model_name_lower}_list"
+    detail_view_name = f"{view_name_prefix}detail"
+    update_view_name = f"{view_name_prefix}update"
+    delete_view_name = f"{view_name_prefix}delete"
+    create_view_url =  f"{{% url '{app_label}:{view_name_prefix}create' %}}"
     return {
         "app_label": app_label,
-        "model_name": django_model["name"],
-        "model_name_plural": django_model["name_plural"],
-        "model_name_lower": model_name_lower,
-        "model_verbose_name": django_model["verbose_name"],
-        "model_verbose_name_plural": django_model["verbose_name_plural"],
-        "model_has_file_fields": django_model["has_file_field"],
-        "model_fields": django_model["fields"],
-        "model_obj_accessor": "{{" + model_name_lower + "}}",
-        "list_view_url": f"{{% url '{app_label}:{model_name_lower}_list' %}}",
-        "create_view_url": f"{{% url '{app_label}:{model_name_lower}_create' %}}",
-        "detail_view_url": f"{{% url '{app_label}:{model_name_lower}_detail' {model_name_lower}.pk %}}",
-        "update_view_url": f"{{% url '{app_label}:{model_name_lower}_update' {model_name_lower}.pk %}}",
-        "delete_view_url": f"{{% url '{app_label}:{model_name_lower}_delete' {model_name_lower}.pk %}}",
+        "model": django_model,
+        "fields_tuple": tuple(django_model["fields"].keys()),
+        "view_name_prefix": view_name_prefix,
+        "list_view_name": list_view_name,
+        "detail_view_name": detail_view_name,
+        "delete_view_name": delete_view_name,
+        "list_view_url": f"{{% url '{app_label}:{list_view_name}' %}}",
+        "create_view_url": create_view_url,
+        "detail_view_url": f"{{% url '{app_label}:{detail_view_name}' {model_name_lower}.{django_model['lookup_field']} %}}",
+        "update_view_url": f"{{% url '{app_label}:{update_view_name}' {model_name_lower}.{django_model['lookup_field']} %}}",
+        "delete_view_url": f"{{% url '{app_label}:{delete_view_name}' {model_name_lower}.{django_model['lookup_field']} %}}",
         "entry_point": entry_point,
         "login_required": login_required,
+        "pagination_block":f"""
+        {{% if {model_name_lower}s_page.paginator.num_pages > 1 %}}
+            {{% include "partials/pagination.html" with page={model_name_lower}s_page %}}
+        {{% endif %}}
+        """,
+        "table_block": f"""
+        {{% if {model_name_lower}s_page.object_list %}}
+        {{% include "partials/table.html" with objects={model_name_lower}s_page.object_list fields=fields detail_view="{app_label}:{detail_view_name}" delete_view="{app_label}:{delete_view_name}" update_view="{app_label}:{update_view_name}" %}}
+        {{% else %}}
+        <p class="mt-8">There are no {django_model["verbose_name_plural"]}. <a class="hover:underline cursor-pointer" href="{ create_view_url }">Create one now?</a> </p>
+        {{% endif %}}
+        """
     }

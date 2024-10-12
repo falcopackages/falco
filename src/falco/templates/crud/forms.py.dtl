@@ -1,24 +1,24 @@
 # IMPORTS:START
 from django import forms
 
-from .models import {{model_name}}
+from .models import {{model.name}}
 
 # IMPORTS:END
 
 
 # CODE:START
-class {{model_name}}Form(forms.ModelForm):
+class {{model.name}}Form(forms.ModelForm):
     class Meta:
-        model = {{model_name}}
+        model = {{model.name}}
         fields = (
-        {% for field_name, field_data in model_fields.items %}
+        {% for field_name, field_data in model.fields.items %}
           {% if field_data.editable %}
             {% if not forloop.first %}, {% endif %}"{{ field_name }}"
           {% endif %}
         {% endfor %}
-        ){% if model_has_editable_date_fields %}
+        ){% if model.has_editable_date_field %}
         widgets = {
-            {% for field_name, field_data in model_fields.items %}
+            {% for field_name, field_data in model.fields.items %}
                {% if field_data.editable %}
                 {% if field_data.class_name == "DateField" %}
                     "{{ field_name }}": forms.DateInput(attrs={"type": "date"}),

@@ -17,8 +17,8 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 {% endif %}
 
-from .forms import {{model_name}}Form
-from .models import {{model_name}}
+from .forms import {{model.name}}Form
+from .models import {{model.name}}
 
 # IMPORTS:END
 
@@ -27,49 +27,49 @@ from .models import {{model_name}}
 {% if login_required %}
 @login_required
 @for_htmx(use_partial="table")
-def {{model_name|lower}}_list(request: AuthenticatedHttpRequest):{% else %}
+def {{ list_view_name }}(request: AuthenticatedHttpRequest):{% else %}
 @for_htmx(use_partial="table")
-def {{model_name|lower}}_list(request: HttpRequest):{% endif %}
-    {{model_name_plural|lower}} = {{model_name}}.objects.order_by("id")
+def {{list_view_name}}(request: HttpRequest):{% endif %}
+    {{model.name_plural|lower}} = {{model.name}}.objects.order_by("-created_at")
     return TemplateResponse(
         request,
-        "{{app_label}}/{{model_name|lower}}_list.html",
-        context={"{{model_name_plural|lower}}_page": paginate_queryset(request, {{model_name_plural|lower}})},
+        "{{app_label}}/{{ list_view_name }}.html",
+        context={"{{model.name_plural|lower}}_page": paginate_queryset(request, {{model.name_plural|lower}}), "fields": {{ fields_tuple|safe }} },
     )
 
 {% if login_required %}
 @login_required
-def {{model_name|lower}}_detail(request: AuthenticatedHttpRequest, pk: int):{% else %}
-def {{model_name|lower}}_detail(request: HttpRequest, pk: int):{% endif %}
-    {{model_name|lower}} = get_object_or_404({{model_name}}.objects, pk=pk)
+def {{detail_view_name}}(request: AuthenticatedHttpRequest, {{ model.lookup_field }}):{% else %}
+def {{detail_view_name}}(request: HttpRequest, {{ model.lookup_field }}):{% endif %}
+    {{model.name|lower}} = get_object_or_404({{model.name}}.objects, {{ model.lookup_field }} = {{ model.lookup_field }})
     return TemplateResponse(
         request,
-        "{{app_label}}/{{model_name|lower}}_detail.html",
-        context={"{{model_name|lower}}": {{model_name|lower}}},
+        "{{app_label}}/{{ detail_view_name }}.html",
+        context={"{{model.name_lower}}": {{model.name_lower}}},
     )
 
 {% if login_required %}
 @login_required
-def process_form(request: AuthenticatedHttpRequest, pk: int):{% else %}
-def process_form(request: HttpRequest, pk: int | None = None):{% endif %}
-    instance = get_object_or_404({{model_name}}.objects, pk=pk) if pk else None {% if model_has_file_fields %}
-    form = {{model_name}}Form(request.POST or None, request.FILES or None, instance=instance) {% else %}
-    form = {{model_name}}Form(request.POST or None, instance=instance) {% endif %}
+def process_{{ view_name_prefix }}form(request: AuthenticatedHttpRequest,  {{ model.lookup_field }}):{% else %}
+def process_{{ view_name_prefix }}form(request: HttpRequest, {{ model.lookup_field }} = None):{% endif %}
+    instance = get_object_or_404({{ model.name }}.objects, {{ model.lookup_field }}= {{ model.lookup_field }}) if {{ model.lookup_field }} else None {% if model.has_file_fields %}
+    form = {{model.name}}Form(request.POST or None, request.FILES or None, instance=instance) {% else %}
+    form = {{model.name}}Form(request.POST or None, instance=instance) {% endif %}
     if request.method == "POST" and form.is_valid():
         form.save()
-        return redirect(reverse("{{app_label}}:{{model_name|lower}}_detail", args=(pk,)) if pk else reverse("{{app_label}}:{{model_name|lower}}_list"))
+        return redirect(reverse("{{app_label}}:{{detail_view_name}}", args=({{ model.lookup_field }},)) if {{ model.lookup_field }} else reverse("{{app_label}}:{{ list_view_name }}"))
     return TemplateResponse(
         request,
-        "{{app_label}}/{{model_name|lower}}_form.html",
+        {% if not entry_point %} "{{app_label}}/{{model.name|lower}}_form.html" {% else %} "{{app_label}}/form.html" {% endif %} ,
         context={"instance": instance, "form": form},
     )
 
 @require_http_methods(["DELETE"])
 {% if login_required %}
 @login_required
-def {{model_name|lower}}_delete(_: AuthenticatedHttpRequest, pk: int):{% else %}
-def {{model_name|lower}}_delete(_: HttpRequest, pk: int):{% endif %}
-    {{model_name}}.objects.filter(pk=pk).delete()
+def {{delete_view_name}}(_: AuthenticatedHttpRequest, {{ model.lookup_field }}):{% else %}
+def {{delete_view_name}}(_: HttpRequest, {{ model.lookup_field }}):{% endif %}
+    {{model.name}}.objects.filter({{ model.lookup_field }}={{ model.lookup_field }}).delete()
     return HttpResponse("")
 
 

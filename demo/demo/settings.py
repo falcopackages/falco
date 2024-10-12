@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,11 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-FALCO = {
-    "work": {
-        "redis": "redis-server"
-    }
-}
+# FALCO = {"work": {"redis": "redis-server"}}
 
 # Application definition
 
@@ -41,7 +38,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "heroicons",
+    "template_partials",
+    "django_htmx",
     "falco",
+    "demo.books",
 ]
 
 MIDDLEWARE = [
@@ -52,21 +53,39 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",
 ]
 
 ROOT_URLCONF = "demo.urls"
 
+DEFAULT_LOADERS = [
+    "django.template.loaders.filesystem.Loader",
+    "django.template.loaders.app_directories.Loader",
+]
+
+CACHED_LOADERS = [("django.template.loaders.cached.Loader", DEFAULT_LOADERS)]
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR /  "templates"],
-        "APP_DIRS": True,
+        "DIRS": [BASE_DIR / "templates"],
+        # "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+            ],
+            "builtins": [
+                "heroicons.templatetags.heroicons",
+                "template_partials.templatetags.partials",
+            ],
+            "loaders": [
+                (
+                    "template_partials.loader.Loader",
+                    DEFAULT_LOADERS if DEBUG else CACHED_LOADERS,
+                )
             ],
         },
     },
@@ -117,7 +136,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = "static/"
-STATICFILES_DIRS = [BASE_DIR/ "static"]
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

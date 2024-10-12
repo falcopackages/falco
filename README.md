@@ -15,7 +15,7 @@
 [![PyPI - Versions from Framework Classifiers](https://img.shields.io/pypi/frameworkversions/django/falco-app)](https://pypi.org/project/falco-app/)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/falco-app)](https://pypistats.org/packages/falco-app)
 
-Falco is an opinionated toolkit designed to speed up web app development with Django. It helps you get to production in just a few hours while keeping your project close to the standard Django structure, keeping things simple and manageable.
+Falco is an opinionated toolkit designed to speed up web app development with Django. It helps you get to production in just a few minutes while keeping your project close to the standard Django structure, keeping things simple and manageable.
 
 
 ## 🚀 Features
