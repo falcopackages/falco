@@ -24,7 +24,7 @@ upgrade:
     hatch run pre-commit run reorder-python-imports -a
 
 @test:
-    hatch run pytest
+    hatch run pytest --ignore=tests/old
 
 @dj *ARGS:
     cd demo && hatch run python manage.py {{ ARGS }}

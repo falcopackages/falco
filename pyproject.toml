@@ -59,6 +59,8 @@ dependencies = [
   "django-allauth",
   "pre-commit",
   "pytest",
+  "pytest-django",
+  "pytest-xdist",
   "pyproject-fmt",
 ]
 
@@ -90,3 +92,13 @@ exclude_lines = [
   "if __name__ == .__main__.:",
   "if TYPE_CHECKING:",
 ]
+
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "demo.settings"
+addopts = "--create-db -n auto --dist loadfile --doctest-modules"
+norecursedirs = ".* bin build dist *.egg htmlcov logs node_modules templates venv"
+python_files = "tests.py test_*.py *_tests.py"
+pythonpath = "src demo"
+testpaths = ["tests"]
+
