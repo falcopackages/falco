@@ -1,8 +1,8 @@
 from pathlib import Path
 
 from django.conf import settings
-from django.core.management.base import BaseCommand
-from django.core.management.base import CommandError
+from django.core.management.base import BaseCommand, CommandError
+
 from falco.utils import clean_git_repo
 
 
@@ -10,12 +10,14 @@ def get_apps_dir() -> Path:
     try:
         return settings.APPS_DIR
     except AttributeError:
-        raise CommandError("Add an APPS_DIR settings, eg: APPS_DIR = BASE / 'apps'")
+        msg = "Add an APPS_DIR settings, eg: APPS_DIR = BASE / 'apps'"
+        raise CommandError(msg)
 
 
 def exit_if_debug_false():
     if not settings.DEBUG:
-        raise CommandError("Nope, not happening, this command can only be run with DEBUG=True.")
+        msg = "Nope, not happening, this command can only be run with DEBUG=True."
+        raise CommandError(msg)
 
 
 class CleanRepoOnlyCommand(BaseCommand):
@@ -29,5 +31,6 @@ class CleanRepoOnlyCommand(BaseCommand):
     def handle(self, *args, **options):
         allow_dirty = options["allow_dirty"]
         if not clean_git_repo() and not allow_dirty:
-            raise CommandError("Git repo is not clean, clean or stash away changes before running this command")
+            msg = "Git repo is not clean, clean or stash away changes before running this command"
+            raise CommandError(msg)
         return super().handle(*args, **options)

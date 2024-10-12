@@ -1,8 +1,6 @@
 from pathlib import Path
 
-from falco.management.base import CleanRepoOnlyCommand
-from falco.management.base import exit_if_debug_false
-from falco.management.base import get_apps_dir
+from falco.management.base import CleanRepoOnlyCommand, exit_if_debug_false, get_apps_dir
 from falco.utils import simple_progress
 
 

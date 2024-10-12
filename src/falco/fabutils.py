@@ -2,9 +2,7 @@ import json
 import urllib.request
 from functools import wraps
 
-from rich.progress import Progress
-from rich.progress import SpinnerColumn
-from rich.progress import TextColumn
+from rich.progress import Progress, SpinnerColumn, TextColumn
 
 
 def with_progress(description, pass_progress=True):
@@ -45,7 +43,8 @@ def _get_asset_id(token, owner, repo, project_name):
     for asset in assets:
         if asset["name"] == f"{project_name}-x86_64-linux":
             return asset["id"]
-    raise Exception(f"Asset not found with name {project_name}-x86_64-linux")
+    msg = f"Asset not found with name {project_name}-x86_64-linux"
+    raise Exception(msg)
 
 
 def curl_binary_download_cmd(*, owner, repo, project_name=None, token=None):

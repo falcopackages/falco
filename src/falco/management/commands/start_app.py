@@ -2,12 +2,11 @@ from pathlib import Path
 
 import parso
 from django.conf import settings
-from django.core.management import call_command
-from django.core.management import CommandError
+from django.core.management import CommandError, call_command
 from django.core.management.base import BaseCommand
+
 from falco.management.base import get_apps_dir
-from falco.utils import run_python_formatters
-from falco.utils import simple_progress
+from falco.utils import run_python_formatters, simple_progress
 
 
 class Command(BaseCommand):
@@ -24,15 +23,15 @@ class Command(BaseCommand):
 
         try:
             app_dir.mkdir()
-        except FileExistsError:
+        except FileExistsError as e:
             msg = f"Python module with the name {app_name} already exists in {apps_dir}."
-            raise CommandError(msg)
+            raise CommandError(msg) from e
 
         self.create_app(app_name=app_name, app_dir=app_dir, final_app_name=final_app_name)
         self.register_app(app_name=final_app_name)
 
     @classmethod
-    def create_app(cls, app_name: str, app_dir: Path | None, final_app_name:str):
+    def create_app(cls, app_name: str, app_dir: Path | None, final_app_name: str):
         with simple_progress(f"Creating {app_name} app"):
             call_command("startapp", app_name, str(app_dir))
 
@@ -52,7 +51,7 @@ class {model_name}(TimeStamped):
     def __str__(self):
         return self.name
 """
-            )
+                                   )
 
             (app_dir / "admin.py").write_text("")
 

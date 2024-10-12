@@ -5,6 +5,7 @@ from multiprocessing import Pool
 from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
+
 from falco.conf import app_settings
 
 
@@ -34,12 +35,10 @@ class Command(BaseCommand):
 
     @classmethod
     def run_with_multiprocess(cls, commands: dict):
-        import sys
         with Pool(processes=len(commands)) as pool:
             try:
                 pool.map(subprocess.run, [cmd.split() for cmd in commands.values()])
             except KeyboardInterrupt:
-                print("Process interrupted by user", file=sys.stderr)
                 pool.terminate()
             finally:
                 pool.close()

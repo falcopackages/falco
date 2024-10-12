@@ -3,7 +3,7 @@ from functools import wraps
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 
-from .types import HttpRequest
+from falco.types import HttpRequest
 
 
 def for_htmx(
@@ -25,7 +25,8 @@ def for_htmx(
     for this decorator to be applied.
     """
     if len([p for p in [use_partial, use_template, use_partial_from_params] if p]) != 1:
-        raise ValueError("You must pass exactly one of 'use_template', 'use_partial' or 'use_partial_from_params=True'")
+        msg = "You must pass exactly one of 'use_template', 'use_partial' or 'use_partial_from_params=True'"
+        raise ValueError(msg)
 
     def decorator(view):
         @wraps(view)
@@ -53,9 +54,11 @@ def for_htmx(
                     # This is a special case response, it doesn't need modifying:
                     return resp
 
-                raise ValueError("Cannot modify a response that isn't a TemplateResponse")
+                msg = "Cannot modify a response that isn't a TemplateResponse"
+                raise ValueError(msg)
             if resp.is_rendered:
-                raise ValueError("Cannot modify a response that has already been rendered")
+                msg = "Cannot modify a response that has already been rendered"
+                raise ValueError(msg)
 
             if use_partial_from_params:
                 use_partial_from_params_val = _get_param_from_request(request, "use_partial")

@@ -28,11 +28,9 @@ from shutil import copy2
 
 from django.apps import apps
 from django.conf import settings
-from django.core.management.base import BaseCommand
-from django.core.management.base import CommandError
+from django.core.management.base import BaseCommand, CommandError
 from django.template import loader
-from django.template.exceptions import TemplateDoesNotExist
-from django.template.exceptions import TemplateSyntaxError
+from django.template.exceptions import TemplateDoesNotExist, TemplateSyntaxError
 
 
 def get_template_absolute_path(template_path):
@@ -40,9 +38,11 @@ def get_template_absolute_path(template_path):
         template = loader.get_template(template_path)
         return template.origin.name  # type: ignore[attr-defined]
     except TemplateDoesNotExist:
-        raise CommandError(f"Template {template_path} was not found")
+        msg = f"Template {template_path} was not found"
+        raise CommandError(msg)
     except TemplateSyntaxError as e:
-        raise CommandError(f"Syntax error in template {template_path}: {e}")
+        msg = f"Syntax error in template {template_path}: {e}"
+        raise CommandError(msg)
 
 
 class Command(BaseCommand):

@@ -1,16 +1,14 @@
 from pathlib import Path
 
 import httpx
-from django.core.management.base import BaseCommand
-from django.core.management.base import CommandError
-from falco.utils import simple_progress
+from django.core.management.base import BaseCommand, CommandError
 from rich import print as rich_print
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
-from .htmx import default_htmx_output_folder
-from .htmx import network_request_with_progress
+from falco.management.commands.htmx import default_htmx_output_folder, network_request_with_progress
+from falco.utils import simple_progress
 
 REGISTRY_URL = "https://htmx-extensions.oluwatobi.dev/extensions.json"
 

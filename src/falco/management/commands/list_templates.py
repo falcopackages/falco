@@ -11,7 +11,7 @@ from django.template.utils import get_app_template_dirs
 class Command(BaseCommand):
     help = "List all template files of the Django project."
 
-    def handle(self, *args, **options):
+    def handle(self, *_, **__):
         app_template_dirs = get_app_template_dirs("templates")
         setting_template_dirs = [Path(str(dir_)) for dir_ in settings.TEMPLATES[0]["DIRS"]]
 
@@ -22,8 +22,4 @@ class Command(BaseCommand):
         self.stdout.write("\n".join(template_files))
 
     def list_template_files(self, template_dir: Path) -> list[str]:
-        template_files = []
-        for file_path in Path(template_dir).rglob("*"):
-            if file_path.suffix in [".html", ".txt"]:
-                template_files.append(str(file_path))
-        return template_files
+        return [str(file_path) for file_path in Path(template_dir).rglob("*") if file_path.suffix in [".html", ".txt"]]

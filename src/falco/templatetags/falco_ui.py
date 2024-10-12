@@ -11,7 +11,7 @@ def lookup(value):
 
 @register.filter()
 def field_verbose_names(objects, fields):
-    return [objects[0]._meta.get_field(f).verbose_name for f in fields]
+    return [objects[0]._meta.get_field(f).verbose_name for f in fields] # noqa
 
 
 @register.filter()

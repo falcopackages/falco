@@ -37,11 +37,11 @@ classifiers = [
 ]
 dynamic = [ "version" ]
 dependencies = [ "django", "rich", "parso", "httpx"]
-optional-dependencies = { tables = [ "django-tables2" ], filters = [ "django-filter" ], ui = ["falco-ui"] }
+optional-dependencies = { filters = [ "django-filter" ], ui = ["falco-ui"], all = ["django-filter", "falco-ui"] }
 
-urls.Documentation = "https://github.com/Tobi-De/falco#readme"
-urls.Issues = "https://github.com/Tobi-De/falco/issues"
-urls.Source = "https://github.com/Tobi-De/falco"
+urls.Documentation = "https://github.com/falcopackages/falco#readme"
+urls.Issues = "https://github.com/falcopackages/falco/issues"
+urls.Source = "https://github.com/falcopackages/falco"
 
 [tool.hatch.build.targets.wheel]
 packages = [
@@ -49,11 +49,12 @@ packages = [
 ]
 
 [tool.hatch.envs.default]
-features = [ "tables", "filters", "ui" ]
+features = [ "all" ]
 dependencies = [
   "falco-cli==0.27.0a1",
   "heroicons[django]",
   "django-template-partials",
+  "django-extensions",
   "django_htmx",
   "django-allauth",
   "pre-commit",

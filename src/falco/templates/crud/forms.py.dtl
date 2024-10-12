@@ -10,13 +10,7 @@ from .models import {{model.name}}
 class {{model.name}}Form(forms.ModelForm):
     class Meta:
         model = {{model.name}}
-        fields = (
-        {% for field_name, field_data in model.fields.items %}
-          {% if field_data.editable %}
-            {% if not forloop.first %}, {% endif %}"{{ field_name }}"
-          {% endif %}
-        {% endfor %}
-        ){% if model.has_editable_date_field %}
+        fields = {{ editable_fields_tuple|safe }} {% if model.has_editable_date_field %}
         widgets = {
             {% for field_name, field_data in model.fields.items %}
                {% if field_data.editable %}

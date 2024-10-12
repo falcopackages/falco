@@ -1,9 +1,8 @@
-from django.core.paginator import InvalidPage
-from django.core.paginator import Paginator
+from django.core.paginator import InvalidPage, Paginator
 from django.db.models import QuerySet
 from django.http import Http404
 
-from .types import HttpRequest
+from falco.types import HttpRequest
 
 
 def paginate_queryset(request: HttpRequest, queryset: QuerySet, page_size: int = 10):

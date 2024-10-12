@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.http import HttpRequest as HttpRequestBase
 
 if importlib.util.find_spec("django_htmx"):
-    # TODO should look for the middleware, not the package
+    # TODO: should look for the middleware, not the package
     from django_htmx.middleware import HtmxDetails
 
 

@@ -7,11 +7,12 @@ from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.template import Context, Template
+from io import StringIO
+
 
 from falco.management.base import CleanRepoOnlyCommand
-from falco.utils import run_html_formatters, run_python_formatters, simple_progress
-
 from falco.management.commands.copy_template import get_template_absolute_path
+from falco.utils import run_html_formatters, run_python_formatters, simple_progress
 
 IMPORT_START_COMMENT = "# IMPORTS:START"
 IMPORT_END_COMMENT = "# IMPORTS:END"
@@ -44,13 +45,15 @@ class BlueprintContext(TypedDict):
     login_required: bool
     app_label: str
     model: DjangoModel
-    view_name_prefix:str
+    view_name_prefix: str
     entry_point: bool
     list_view_url: str
     create_view_url: str
     detail_view_url: str
     update_view_url: str
     delete_view_url: str
+    table_block: str
+    pagination_block: str
 
 
 class Command(CleanRepoOnlyCommand):
@@ -104,7 +107,7 @@ class Command(CleanRepoOnlyCommand):
         app_label, model_name = self.parse_model_path(model_path)
 
         if entry_point and not model_name:
-            msg =  "The --entry-point option requires a full model path."
+            msg = "The --entry-point option requires a full model path."
             raise CommandError(msg)
 
         if migrate:
@@ -154,7 +157,6 @@ class Command(CleanRepoOnlyCommand):
                         Path(get_template_absolute_path(p)) for p in python_blueprints
                     ],
                     contexts=blueprint_contexts,
-                    entry_point=entry_point,
                 )
             )
 
@@ -222,8 +224,8 @@ class Command(CleanRepoOnlyCommand):
                     f"{name.replace('y', 'ies')}" if name.endswith("y") else f"{name}s"
                 )
 
-            verbose_name = model._meta.verbose_name # noqa
-            verbose_name_plural = model._meta.verbose_name_plural # noqa
+            verbose_name = model._meta.verbose_name  # noqa
+            verbose_name_plural = model._meta.verbose_name_plural  # noqa
             fields: dict[str, DjangoField] = {
                 field.name: {
                     "verbose_name": field.verbose_name,
@@ -233,7 +235,7 @@ class Command(CleanRepoOnlyCommand):
                                 f"{name_lower}.{field.name}"
                                 + (".url }}" if field.__class__.__name__ in file_fields else "}}"),
                 }
-                for field in model._meta.fields # noqa
+                for field in model._meta.fields  # noqa
                 if field.name not in excluded_fields
             }
             name_lower = name.lower()
@@ -264,8 +266,6 @@ class Command(CleanRepoOnlyCommand):
         app: AppConfig,
         blueprints: list[Path],
         contexts: list["BlueprintContext"],
-        *,
-        entry_point: bool,
     ) -> list[Path]:
         updated_files = []
 
@@ -281,13 +281,8 @@ class Command(CleanRepoOnlyCommand):
             imports_content, code_content = "", ""
 
             for context in contexts:
-                # model_name_lower = context["model"]["name_lower"]
                 imports_content += render_from_string(imports_template, context)
                 code_content += render_from_string(code_template, context)
-                #
-                # if entry_point:
-                #     code_content = code_content.replace(f"{model_name_lower}_", "")
-                #     code_content = code_content.replace("list", "index")
 
             file_to_write_to.write_text(
                 imports_content + file_to_write_to.read_text() + code_content
@@ -319,10 +314,10 @@ class Command(CleanRepoOnlyCommand):
             prefix = "" if entry_point else f"{urlsafe_model_verbose_name_plural}/"
             urls_content += f"""
                 path('{prefix}', views.{list_view_name}, name='{list_view_name}'),
-                path('{prefix}create/', views.process_{view_name_prefix}form, name='{view_name_prefix}create'),
-                path('{prefix}<int:pk>/', views.{view_name_prefix}detail, name='{view_name_prefix}detail'),
-                path('{prefix}<int:pk>/update/', views.process_form, name='{view_name_prefix}update'),
-                path('{prefix}<int:pk>/delete/', views.{view_name_prefix}delete, name='{view_name_prefix}delete'),
+                path('{prefix}new/', views.process_{view_name_prefix}form, name='{view_name_prefix}create'),
+                path('{prefix}<{django_model['path_converter']}:{django_model['lookup_field']}>/', views.{view_name_prefix}detail, name='{view_name_prefix}detail'),
+                path('{prefix}<{django_model['path_converter']}:{django_model['lookup_field']}>/edit/', views.process_form, name='{view_name_prefix}update'),
+                path('{prefix}<{django_model['path_converter']}:{django_model['lookup_field']}>/delete/', views.{view_name_prefix}delete, name='{view_name_prefix}delete'),
             """
 
         app_urls = Path(app.path) / "urls.py"
@@ -333,7 +328,7 @@ class Command(CleanRepoOnlyCommand):
         else:
             app_urls.touch()
             app_urls.write_text(
-            f"""
+                f"""
 from django.urls import path
 from . import views
 
@@ -362,17 +357,18 @@ urlpatterns = [
             for context in contexts:
                 model_name_lower = context["model"]["name_lower"]
                 if entry_point:
-                    new_filename = "index.html" if blueprint.name == "list.html" else blueprint.name
+                    new_filename = (
+                        "index.html"
+                        if blueprint.name == "list.html"
+                        else blueprint.name
+                    )
                 else:
                     new_filename = f"{model_name_lower}_{blueprint.name}"
                 file_to_write_to = templates_dir / new_filename
                 file_to_write_to.touch(exist_ok=True)
-                views_content = render_from_string(blueprint.read_text(), context=context)
-
-                # if entry_point:
-                #     views_content = views_content.replace(f"{model_name_lower}_", "")
-                #     views_content = views_content.replace("list", "index")
-
+                views_content = render_from_string(
+                    blueprint.read_text(), context=context
+                )
 
                 file_to_write_to.write_text(views_content)
                 updated_files.append(file_to_write_to)
@@ -399,13 +395,14 @@ urlpatterns = [
             cmd_args.append(model_name)
 
         try:
-            output = call_command("admin_generator", *cmd_args)
+            output = StringIO()
+            call_command("admin_generator", *cmd_args, stdout=output)
         except CommandError as e:
             self.stdout.write(self.style.WARNING(f"Admin failed to generate: {e}"))
             return admin_file
 
         # the first line of the generated code set the encoding, it is useless for python 3
-        admin_code = output.stdout.split("\n", 1)[1]
+        admin_code = output.getvalue().split("\n", 1)[1]
         existing_code = admin_file.read_text()
 
         if model_name and model_name.title() in existing_code:
@@ -433,27 +430,6 @@ urlpatterns = [
         admin_file.write_text("\n" + "\n".join(_imports) + "\n" + "\n".join(_code))
 
         return admin_file
-
-
-def render_from_string(template_string: str, context: dict) -> str:
-    return Template(template_string).render(Context(context))
-
-
-def extract_python_file_templates(file_content: str) -> tuple[str, str]:
-    imports_template = extract_content_from(
-        file_content, IMPORT_START_COMMENT, IMPORT_END_COMMENT
-    )
-    code_template = extract_content_from(
-        file_content, CODE_START_COMMENT, CODE_END_COMMENT
-    )
-    return imports_template, code_template
-
-
-def extract_content_from(text: str, start_comment: str, end_comment: str):
-    start_index = text.find(start_comment) + len(start_comment)
-    end_index = text.find(end_comment)
-    return text[start_index:end_index]
-
 
 
 def register_app_urls(app: AppConfig) -> Path:
@@ -497,11 +473,12 @@ def build_blueprint_context(
     detail_view_name = f"{view_name_prefix}detail"
     update_view_name = f"{view_name_prefix}update"
     delete_view_name = f"{view_name_prefix}delete"
-    create_view_url =  f"{{% url '{app_label}:{view_name_prefix}create' %}}"
+    create_view_url = f"{{% url '{app_label}:{view_name_prefix}create' %}}"
     return {
         "app_label": app_label,
         "model": django_model,
         "fields_tuple": tuple(django_model["fields"].keys()),
+        "editable_fields_tuple": tuple(key for key, value in django_model["fields"].items() if value["editable"]),
         "view_name_prefix": view_name_prefix,
         "list_view_name": list_view_name,
         "detail_view_name": detail_view_name,
@@ -513,7 +490,7 @@ def build_blueprint_context(
         "delete_view_url": f"{{% url '{app_label}:{delete_view_name}' {model_name_lower}.{django_model['lookup_field']} %}}",
         "entry_point": entry_point,
         "login_required": login_required,
-        "pagination_block":f"""
+        "pagination_block": f"""
         {{% if {model_name_lower}s_page.paginator.num_pages > 1 %}}
             {{% include "partials/pagination.html" with page={model_name_lower}s_page %}}
         {{% endif %}}
@@ -522,7 +499,27 @@ def build_blueprint_context(
         {{% if {model_name_lower}s_page.object_list %}}
         {{% include "partials/table.html" with objects={model_name_lower}s_page.object_list fields=fields detail_view="{app_label}:{detail_view_name}" delete_view="{app_label}:{delete_view_name}" update_view="{app_label}:{update_view_name}" %}}
         {{% else %}}
-        <p class="mt-8">There are no {django_model["verbose_name_plural"]}. <a class="hover:underline cursor-pointer" href="{ create_view_url }">Create one now?</a> </p>
+        <p class="mt-8">There are no {django_model["verbose_name_plural"]}. <a class="hover:underline cursor-pointer" href="{create_view_url}">Create one now?</a> </p>
         {{% endif %}}
-        """
+        """,
     }
+
+
+def render_from_string(template_string: str, context: dict) -> str:
+    return Template(template_string).render(Context(context))
+
+
+def extract_python_file_templates(file_content: str) -> tuple[str, str]:
+    imports_template = extract_content_from(
+        file_content, IMPORT_START_COMMENT, IMPORT_END_COMMENT
+    )
+    code_template = extract_content_from(
+        file_content, CODE_START_COMMENT, CODE_END_COMMENT
+    )
+    return imports_template, code_template
+
+
+def extract_content_from(text: str, start_comment: str, end_comment: str):
+    start_index = text.find(start_comment) + len(start_comment)
+    end_index = text.find(end_comment)
+    return text[start_index:end_index]

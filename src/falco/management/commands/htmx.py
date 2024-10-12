@@ -5,10 +5,10 @@ from pathlib import Path
 
 import httpx
 from django.conf import settings
-from django.core.management.base import BaseCommand
-from django.core.management.base import CommandError
-from falco.utils import simple_progress
+from django.core.management.base import BaseCommand, CommandError
 from httpx import codes
+
+from falco.utils import simple_progress
 
 HTMX_DOWNLOAD_URL = "https://unpkg.com/htmx.org@{version}/dist/htmx.min.js"
 HTMX_GH_RELEASE_LATEST_URL = "https://api.github.com/repos/bigskysoftware/htmx/releases/latest"
@@ -57,7 +57,8 @@ def default_htmx_output_folder() -> Path:
         folder.mkdir(exist_ok=True, parents=True)
         return folder
     except IndexError:
-        raise CommandError("Add at least one folder in your STATICFILES_DIRS settings and make sure it exists")
+        msg = "Add at least one folder in your STATICFILES_DIRS settings and make sure it exists"
+        raise CommandError(msg)
 
 
 @contextmanager
