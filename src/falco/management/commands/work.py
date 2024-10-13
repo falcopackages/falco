@@ -13,7 +13,11 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "address", type=str, nargs="?", default="127.0.0.1:8000", help="Address to run the django server on"
+            "address",
+            type=str,
+            nargs="?",
+            default="127.0.0.1:8000",
+            help="Address to run the django server on",
         )
 
     def handle(self, *args, **options):

@@ -9,6 +9,7 @@ if importlib.util.find_spec("django_htmx"):
 
     class HttpRequest(HttpRequestBase):
         htmx: HtmxDetails
+
 else:
 
     class HttpRequest(HttpRequestBase):

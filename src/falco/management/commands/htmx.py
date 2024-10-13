@@ -20,7 +20,11 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("version", type=str, default="latest")
         parser.add_argument(
-            "-o", "--output-dir", type=Path, default=None, help="The directory to write the downloaded file to."
+            "-o",
+            "--output-dir",
+            type=Path,
+            default=None,
+            help="The directory to write the downloaded file to.",
         )
 
     def handle(self, *args, **options):

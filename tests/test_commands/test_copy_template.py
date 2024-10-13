@@ -8,9 +8,7 @@ from django.core.management import call_command
 from django.core.management import CommandError
 from django.test import override_settings
 from falco.management.commands.copy_template import Command
-from falco.management.commands.copy_template import (
-    get_template_absolute_path,
-)
+from falco.management.commands.copy_template import get_template_absolute_path
 
 
 @pytest.fixture

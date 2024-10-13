@@ -71,7 +71,11 @@ def for_htmx(
                     partials_to_use = [partials_to_use]
 
                 rendered_partials = [
-                    render_to_string(f"{resp.template_name}#{b}", context=resp.context_data, request=request)
+                    render_to_string(
+                        f"{resp.template_name}#{b}",
+                        context=resp.context_data,
+                        request=request,
+                    )
                     for b in partials_to_use
                 ]
                 # Create new simple HttpResponse as replacement

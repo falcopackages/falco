@@ -1,4 +1,5 @@
 from importlib.metadata import version as get_version
+
 import falco
 
 # Configuration file for the Sphinx documentation builder.

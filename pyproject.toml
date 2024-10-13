@@ -51,7 +51,7 @@ packages = [
 [tool.hatch.envs.default]
 features = [ "all" ]
 dependencies = [
-  "falco-cli==0.27.0a1",
+  "falco-cli==0.27.0a2",
   "heroicons[django]",
   "django-template-partials",
   "django-extensions",

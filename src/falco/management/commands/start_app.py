@@ -42,7 +42,8 @@ class Command(BaseCommand):
 
             models_file = app_dir / "models.py"
 
-            models_file.write_text(f"""
+            models_file.write_text(
+                f"""
 from django.db import models
 from falco.models import TimeStamped
 
@@ -51,7 +52,8 @@ class {model_name}(TimeStamped):
 
     def __str__(self):
         return self.name
-""")
+"""
+            )
 
             (app_dir / "admin.py").write_text("")
 
