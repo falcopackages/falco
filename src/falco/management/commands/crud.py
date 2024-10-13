@@ -45,10 +45,15 @@ class DjangoModel(TypedDict):
 
 class BlueprintContext(TypedDict):
     login_required: bool
+    entry_point: bool
     app_label: str
     model: DjangoModel
+    fields_tuple: str
+    editable_fields_tuple: str
     view_name_prefix: str
-    entry_point: bool
+    list_view_name: str
+    detail_view_name: str
+    delete_view_name: str
     list_view_url: str
     create_view_url: str
     detail_view_url: str

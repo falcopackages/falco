@@ -16,7 +16,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("app_name", type=str, help="Name of the app to create.")
 
-    def handle(self, *args, **options):
+    def handle(self, *_, **options):
         app_name = options["app_name"]
         apps_dir = get_apps_dir()
         app_dir = apps_dir / app_name

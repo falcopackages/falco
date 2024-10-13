@@ -20,7 +20,7 @@ class Command(BaseCommand):
             help="Address to run the django server on",
         )
 
-    def handle(self, *args, **options):
+    def handle(self, *_, **options):
         address = options["address"]
         commands = {"runserver": f"python manage.py runserver {address}"}
         if "django_tailwind_cli" in settings.INSTALLED_APPS:

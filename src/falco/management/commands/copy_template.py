@@ -44,7 +44,7 @@ def get_template_absolute_path(template_path):
         raise CommandError(msg)
     except TemplateSyntaxError as e:
         msg = f"Syntax error in template {template_path}: {e}"
-        raise CommandError(msg)
+        raise CommandError(msg) from e
 
 
 class Command(BaseCommand):

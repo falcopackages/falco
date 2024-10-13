@@ -9,7 +9,7 @@ from falco.utils import simple_progress
 class Command(CleanRepoOnlyCommand):
     help = "Remove all migrations for the specified applications directory, intended only for development."
 
-    def handle(self, *args, **options):
+    def handle(self, *_, **__):
         exit_if_debug_false()
         apps_dir = get_apps_dir()
         apps = self.delete_migration_files(apps_dir=apps_dir)

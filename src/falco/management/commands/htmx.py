@@ -27,7 +27,7 @@ class Command(BaseCommand):
             help="The directory to write the downloaded file to.",
         )
 
-    def handle(self, *args, **options):
+    def handle(self, *_, **options):
         version = options["version"]
         version = version if version != "latest" else get_latest_tag()
         output_dir = options.get("output_dir") or default_htmx_output_folder()
@@ -63,11 +63,11 @@ def get_latest_tag() -> str:
 def default_htmx_output_folder() -> Path:
     try:
         folder = Path(settings.STATICFILES_DIRS[0]) / "vendors" / "htmx"
-        folder.mkdir(exist_ok=True, parents=True)
-        return folder
     except IndexError:
         msg = "Add at least one folder in your STATICFILES_DIRS settings and make sure it exists"
         raise CommandError(msg)
+    folder.mkdir(exist_ok=True, parents=True)
+    return folder
 
 
 @contextmanager

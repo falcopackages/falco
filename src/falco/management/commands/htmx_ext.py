@@ -33,7 +33,7 @@ class Command(BaseCommand):
             help="The directory to write the downloaded file to.",
         )
 
-    def handle(self, *args, **options):
+    def handle(self, *_, **options):
         output_dir = options.get("output_dir") or default_htmx_output_folder()
         name = options.get("name")
         if name:

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from io import StringIO
-
 import pytest
 from django.apps import apps
 from django.core.management import call_command
