@@ -40,8 +40,8 @@ INSTALLED_APPS = [
     "django_extensions",
     "heroicons",
     "template_partials",
+    "django_simple_nav",
     "django_htmx",
-    "falco_ui",
     "falco",
     "demo.books",
 ]

@@ -54,6 +54,7 @@ dependencies = [
   "falco-cli==0.27.0a2",
   "heroicons[django]",
   "django-template-partials",
+  "django-simple-nav",
   "django-extensions",
   "django_htmx",
   "django-allauth",
@@ -62,6 +63,7 @@ dependencies = [
   "pytest-django",
   "pytest-xdist",
   "pyproject-fmt",
+  "honcho",
 ]
 
 [tool.hatch.version]

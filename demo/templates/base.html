@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load django_simple_nav %}
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -11,6 +12,7 @@
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
 {% include "partials/navigation.html" %}
 <main class="container mx-auto mt-5">
+  {% django_simple_nav "demo.navigation.MainNav" %}
   {% block content %}
   {% endblock content %}
 </main>
