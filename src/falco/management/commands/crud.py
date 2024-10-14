@@ -10,6 +10,7 @@ from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.template import Context
 from django.template import Template
+
 from falco.management.base import CleanRepoOnlyCommand
 from falco.management.commands.copy_template import get_template_absolute_path
 from falco.utils import run_html_formatters
@@ -217,13 +218,20 @@ class Command(CleanRepoOnlyCommand):
 
             verbose_name = model._meta.verbose_name  # noqa
             verbose_name_plural = model._meta.verbose_name_plural  # noqa
+
+            def get_accessor(field) -> str:
+                base_accessor = f"{name_lower}.{field.name}"
+                if field.__class__.__name__ in file_fields:
+                    return f"{{% if {base_accessor} %}} {{{{ {base_accessor}.url }}}} {{% endif %}}"
+                else:
+                    return "{{" + base_accessor + "}}"
+
             fields: dict[str, DjangoField] = {
                 field.name: {
                     "verbose_name": field.verbose_name,
                     "editable": field.editable,
                     "class_name": field.__class__.__name__,
-                    "accessor": "{{"
-                    f"{name_lower}.{field.name}" + (".url }}" if field.__class__.__name__ in file_fields else "}}"),
+                    "accessor": get_accessor(field)
                 }
                 for field in model._meta.fields  # noqa
                 if field.name not in excluded_fields
