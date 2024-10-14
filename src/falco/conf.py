@@ -21,6 +21,7 @@ class AppSettings:
     CACHE_TIME_SECURITY_TXT = 60 * 60 * 24  # one day
     TEMPLATE_ROBOTS_TXT = "robots.txt"
     TEMPLATE_SECURITY_TXT = ".well-known/security.txt"
+    DEFAULT_PAGE_SIZE = 20
     SENTRY_DISGARDED_METHODS = ["GET", "HEAD"]
     SENTRY_DISGARDED_PATHS = ["/health/"]
     SENTRY_PROFILE_RATE = 0.5

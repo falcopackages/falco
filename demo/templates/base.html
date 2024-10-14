@@ -9,7 +9,9 @@
   <script src="//unpkg.com/alpinejs" defer></script>
 </head>
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
-{% include "partials/navigation.html" %}
+{% comment %}
+	{% include "partials/navigation.html" %}
+{% endcomment %}
 <main class="container mx-auto mt-5">
   {% block content %}
   {% endblock content %}

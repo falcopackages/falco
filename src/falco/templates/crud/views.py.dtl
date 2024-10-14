@@ -64,13 +64,13 @@ def process_{{ view_name_prefix }}form(request: HttpRequest, {{ model.lookup_fie
         context={"instance": instance, "form": form},
     )
 
-@require_http_methods(["DELETE"])
+@require_http_methods(["DELETE", "POST"])
 {% if login_required %}
 @login_required
-def {{delete_view_name}}(_: AuthenticatedHttpRequest, {{ model.lookup_field }}):{% else %}
-def {{delete_view_name}}(_: HttpRequest, {{ model.lookup_field }}):{% endif %}
+def {{delete_view_name}}(request: AuthenticatedHttpRequest, {{ model.lookup_field }}):{% else %}
+def {{delete_view_name}}(request: HttpRequest, {{ model.lookup_field }}):{% endif %}
     {{model.name}}.objects.filter({{ model.lookup_field }}={{ model.lookup_field }}).delete()
-    return HttpResponse("")
+    return HttpResponse() if request.htmx else redirect("{{ app_label }}:index")
 
 
 # CODE:END

@@ -57,3 +57,8 @@ def initials(user: AbstractUser) -> str:
         initials_ = f"{user.first_name[0].upper()}{user.last_name[0].upper()}"
 
     return initials_
+
+
+@register.filter
+def class_name(instance: object) -> str:
+    return instance.__class__.__name__

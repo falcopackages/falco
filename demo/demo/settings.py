@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-# FALCO = {"work": {"redis": "redis-server"}}
+FALCO = {"default_page_size": 5}
 
 # Application definition
 
