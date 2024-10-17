@@ -5,6 +5,7 @@ from multiprocessing import Pool
 from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
+
 from falco.conf import app_settings
 
 
@@ -22,14 +23,13 @@ class Command(BaseCommand):
 
     def handle(self, *_, **options):
         address = options["address"]
-        settings_flag = f" --settings {settings.SETTINGS_MODULE}"
-        commands = {"runserver": "django-admin runserver {address}" + settings_flag}
+        commands = {"runserver": "django-admin runserver {address}"}
         if "django_tailwind_cli" in settings.INSTALLED_APPS:
-            commands["tailwind"] = f"django-admin tailwind {settings_flag} watch"
+            commands["tailwind"] = f"django-admin tailwind watch"
         if "tailwind" in settings.INSTALLED_APPS:
-            commands["tailwind"] = f"django-admin tailwind {settings_flag} start"
+            commands["tailwind"] = f"django-admin tailwind start"
         if "django_q" in settings.INSTALLED_APPS:
-            commands["qcluster"] = f"django-admin qcluster {settings_flag}"
+            commands["qcluster"] = f"django-admin qcluster"
 
         commands.update(app_settings.WORK)
         commands["runserver"] = commands["runserver"].format(address=address)
@@ -57,11 +57,7 @@ class Command(BaseCommand):
 
         manager = Manager()
         for name, cmd in commands.items():
-            manager.add_process(
-                name,
-                cmd,
-            )
-
+            manager.add_process(name, cmd)
         try:
             manager.loop()
         finally:
