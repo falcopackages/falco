@@ -22,14 +22,16 @@ class Command(BaseCommand):
 
     def handle(self, *_, **options):
         address = options["address"]
-        commands = {"runserver": f"python manage.py runserver {address}"}
+        settings_flag = f" --settings {settings.SETTINGS_MODULE}"
+        commands = {"runserver": "django-admin runserver {address}" + settings_flag}
         if "django_tailwind_cli" in settings.INSTALLED_APPS:
-            commands["tailwind"] = "python manage.py tailwind watch"
+            commands["tailwind"] = f"django-admin tailwind {settings_flag} watch"
         # TODO: detect also django-tailwind
         if "django_q" in settings.INSTALLED_APPS:
-            commands["qcluster"] = "python manage.py qcluster"
+            commands["qcluster"] = f"django-admin qcluster {settings_flag}"
 
         commands.update(app_settings.WORK)
+        commands["runserver"] = commands["runserver"].format(address=address)
 
         call_command("migrate")
         if importlib.util.find_spec("honcho"):
