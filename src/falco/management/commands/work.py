@@ -26,7 +26,8 @@ class Command(BaseCommand):
         commands = {"runserver": "django-admin runserver {address}" + settings_flag}
         if "django_tailwind_cli" in settings.INSTALLED_APPS:
             commands["tailwind"] = f"django-admin tailwind {settings_flag} watch"
-        # TODO: detect also django-tailwind
+        if "tailwind" in settings.INSTALLED_APPS:
+            commands["tailwind"] = f"django-admin tailwind {settings_flag} start"
         if "django_q" in settings.INSTALLED_APPS:
             commands["qcluster"] = f"django-admin qcluster {settings_flag}"
 
