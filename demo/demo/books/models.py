@@ -6,7 +6,6 @@ from falco.models import TimeStamped
 
 class Book(TimeStamped):
     lookup_field = "slug"
-    path_converter = "str"
 
     name = models.CharField(max_length=255)
     slug = models.SlugField()

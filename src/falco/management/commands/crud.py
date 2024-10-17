@@ -237,12 +237,13 @@ class Command(CleanRepoOnlyCommand):
                 if field.name not in excluded_fields
             }
             name_lower = name.lower()
+            lookup_field = getattr(model, "lookup_field", "pk")
             return {
                 "name": name,
                 "name_lower": name_lower,
                 "name_plural": name_plural,
-                "lookup_field": getattr(model, "lookup_field", "pk"),
-                "path_converter": getattr(model, "path_converter", "int"),
+                "lookup_field": lookup_field,
+                "path_converter": "int" if lookup_field == "pk" else "str",
                 "fields": fields,
                 "obj_accessor": "{{" + name_lower + "}}",
                 "verbose_name": verbose_name,

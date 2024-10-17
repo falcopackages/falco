@@ -11,9 +11,9 @@ _TModel = TypeVar("_TModel", bound=models.Model)
 
 
 @register.filter()
-def lookup(value) -> str:
-    lookup_field = getattr(value, "lookup_field", "pk")
-    return str(getattr(value, lookup_field))
+def lookup(obj: _TModel) -> str:
+    lookup_field = getattr(obj, "lookup_field", "pk")
+    return str(getattr(obj, lookup_field))
 
 
 @register.filter()
