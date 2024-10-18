@@ -40,7 +40,7 @@ class Command(BaseCommand):
                 raise CommandError(msg)
 
         filepath = output_dir / "htmx.min.js"
-        filepath.write_text(content)
+        filepath.write_text(f"/*htmx@{version}*/{content}")
         self.stdout.write(
             self.style.SUCCESS(
                 f"htmx version {version} downloaded successfully to {filepath}",
