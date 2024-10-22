@@ -10,7 +10,7 @@ from django.core.management.base import CommandError
 from falco.utils import simple_progress
 from httpx import codes
 
-HTMX_DOWNLOAD_URL = "https://unpkg.com/htmx.org@{version}/dist/htmx.min.js"
+HTMX_DOWNLOAD_URL = "https://unpkg.com/htmx.org@{version}/dist/htmx.js"
 HTMX_GH_RELEASE_LATEST_URL = "https://api.github.com/repos/bigskysoftware/htmx/releases/latest"
 
 
@@ -39,7 +39,7 @@ class Command(BaseCommand):
                 msg = f"Could not find htmx version {version}."
                 raise CommandError(msg)
 
-        filepath = output_dir / "htmx.min.js"
+        filepath = output_dir / "htmx.js"
         filepath.write_text(f"/*htmx@{version}*/{content}")
         self.stdout.write(
             self.style.SUCCESS(
