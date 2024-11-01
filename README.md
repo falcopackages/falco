@@ -2,7 +2,7 @@
 
 
 > [!IMPORTANT]
-> Work in progress, not ready, not released yet.
+> Work in progress, not ready, not released yet, currently this is the place to go https://github.com/falcopackages/falco-cli
 
 
 
