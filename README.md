@@ -1,5 +1,11 @@
 # Falco
 
+
+> [!IMPORTANT]
+> Work in progress, not ready, not released yet.
+
+
+
 **An opinionated toolkit for building web apps faster with Django**
 
 <img align="right" width="170" height="150" src="https://raw.githubusercontent.com/Tobi-De/falco/main/docs/_static/falco-logo.svg">
