@@ -20,10 +20,23 @@ class Command(BaseCommand):
             default="127.0.0.1:8000",
             help="Address to run the django server on",
         )
+        parser.add_argument(
+            "-p",
+            "--plus",
+            action="store_true",
+            help="Run the server using runserver_plus",
+        )
 
     def handle(self, *_, **options):
         address = options["address"]
-        commands = {"runserver": "django-admin runserver {address}"}
+        use_runserver_plus = options["plus"]
+        commands = {
+            "runserver": (
+                "django-admin runserver_plus {address}"
+                if use_runserver_plus
+                else "django-admin runserver_plus {address}"
+            )
+        }
         if "django_tailwind_cli" in settings.INSTALLED_APPS:
             commands["tailwind"] = f"django-admin tailwind watch"
         if "tailwind" in settings.INSTALLED_APPS:
