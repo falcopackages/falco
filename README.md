@@ -8,7 +8,7 @@
 
 **An opinionated toolkit for building web apps faster with Django**
 
-<img align="right" width="170" height="150" src="https://raw.githubusercontent.com/Tobi-De/falco/main/docs/_static/falco-logo.svg">
+<img align="right" width="170" height="150" src="https://raw.githubusercontent.com/falcopackages/falco/refs/heads/main/docs/_static/falco-logo.svg">
 
 [![CI](https://github.com/Tobi-De/falco/actions/workflows/ci.yml/badge.svg)](https://github.com/Tobi-De/falco/actions/workflows/ci.yml)
 [![Publish Python Package](https://github.com/Tobi-De/falco/actions/workflows/publish.yml/badge.svg)](https://github.com/Tobi-De/falco/actions/workflows/publish.yml)
