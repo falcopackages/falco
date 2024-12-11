@@ -10,7 +10,6 @@ from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.template import Context
 from django.template import Template
-
 from falco.management.base import CleanRepoOnlyCommand
 from falco.management.commands.copy_template import get_template_absolute_path
 from falco.utils import run_html_formatters
@@ -108,7 +107,13 @@ class Command(CleanRepoOnlyCommand):
         login_required = options["login_required"]
         migrate = options["migrate"]
 
-        app_label, model_name = self.parse_model_path(model_path)
+        model_path_parts = model_path.split(".")
+        if len(model_path_parts) == 1:
+            model_name = None
+            app_label = model_path_parts[0]
+        else:
+            model_name = model_path_parts.pop()
+            app_label = ".".join(model_path_parts)
 
         if entry_point and not model_name:
             msg = "The --entry-point option requires a full model path."
@@ -192,17 +197,6 @@ class Command(CleanRepoOnlyCommand):
         self.stdout.write(self.style.SUCCESS(f"CRUD views generated for: {display_names}"))
 
     @classmethod
-    def parse_model_path(cls, model_path: str):
-        model_path_parts = model_path.split(".")
-        if len(model_path_parts) == 1:
-            model_name = None
-            app_label = model_path_parts[0]
-        else:
-            model_name = model_path_parts.pop()
-            app_label = ".".join(model_path_parts)
-        return app_label, model_name
-
-    @classmethod
     def get_models_data(cls, app_label: str, excluded_fields: list[str], *, entry_point: bool) -> "list[DjangoModel]":
         models = apps.get_app_config(app_label).get_models()
         file_fields = ("ImageField", "FileField")
@@ -266,7 +260,9 @@ class Command(CleanRepoOnlyCommand):
         updated_files = []
 
         for blueprint in blueprints:
-            imports_template, code_template = extract_python_file_templates(blueprint.read_text())
+            file_content = blueprint.read_text()
+            imports_template = extract_content_from(file_content, IMPORT_START_COMMENT, IMPORT_END_COMMENT)
+            code_template = extract_content_from(file_content, CODE_START_COMMENT, CODE_END_COMMENT)
             # blueprints python files end in .py.dtl
             file_name_without_jinja = ".".join(blueprint.name.split(".")[:-1])
             file_to_write_to = Path(app.path) / file_name_without_jinja
@@ -327,7 +323,27 @@ urlpatterns = [
 ]
         """
             )
-            updated_files.append(register_app_urls(app=app))
+            root_url = settings.ROOT_URLCONF
+            root_url = root_url.strip().replace(".", "/")
+            root_url_path = Path(f"{root_url}.py")
+            module = parso.parse(root_url_path.read_text())
+            new_path = parso.parse(f"path('{app.label}/', include('{app.name}.urls', namespace='{app.label}'))")
+            for node in module.children:
+                try:
+                    if (
+                        node.children[0].type == parso.python.tree.ExprStmt.type
+                        and node.children[0].children[0].value == "urlpatterns"
+                    ):
+                        patterns = node.children[0].children[2]
+                        elements = patterns.children[1]
+                        elements.children.append(new_path)
+                        new_content = module.get_code()
+                        new_content = "from django.urls import include\n" + new_content
+                        root_url_path.write_text(new_content)
+                        break
+                except AttributeError:
+                    continue
+            updated_files.append(root_url_path)
         return updated_files
 
     @simple_progress("Generating html templates")
@@ -406,32 +422,6 @@ urlpatterns = [
         return admin_file
 
 
-def register_app_urls(app: AppConfig) -> Path:
-    root_url = settings.ROOT_URLCONF
-    root_url = root_url.strip().replace(".", "/")
-    root_url_path = Path(f"{root_url}.py")
-    module = parso.parse(root_url_path.read_text())
-    new_path = parso.parse(f"path('{app.label}/', include('{app.name}.urls', namespace='{app.label}'))")
-
-    for node in module.children:
-        try:
-            if (
-                node.children[0].type == parso.python.tree.ExprStmt.type
-                and node.children[0].children[0].value == "urlpatterns"
-            ):
-                patterns = node.children[0].children[2]
-                elements = patterns.children[1]
-                elements.children.append(new_path)
-                new_content = module.get_code()
-                new_content = "from django.urls import include\n" + new_content
-                root_url_path.write_text(new_content)
-                break
-        except AttributeError:
-            continue
-
-    return root_url_path
-
-
 def build_blueprint_context(
     app_label: str,
     django_model: DjangoModel,
@@ -479,12 +469,6 @@ def build_blueprint_context(
 
 def render_from_string(template_string: str, context: dict) -> str:
     return Template(template_string).render(Context(context))
-
-
-def extract_python_file_templates(file_content: str) -> tuple[str, str]:
-    imports_template = extract_content_from(file_content, IMPORT_START_COMMENT, IMPORT_END_COMMENT)
-    code_template = extract_content_from(file_content, CODE_START_COMMENT, CODE_END_COMMENT)
-    return imports_template, code_template
 
 
 def extract_content_from(text: str, start_comment: str, end_comment: str):
