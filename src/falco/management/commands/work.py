@@ -5,7 +5,6 @@ from multiprocessing import Pool
 from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
-
 from falco.conf import app_settings
 
 
@@ -32,17 +31,17 @@ class Command(BaseCommand):
         use_runserver_plus = options["plus"]
         commands = {
             "runserver": (
-                "django-admin runserver_plus {address}"
+                "python -m django runserver_plus {address}"
                 if use_runserver_plus
-                else "django-admin runserver_plus {address}"
+                else "python -m django runserver {address}"
             )
         }
         if "django_tailwind_cli" in settings.INSTALLED_APPS:
-            commands["tailwind"] = f"django-admin tailwind watch"
+            commands["tailwind"] = f"python -m django tailwind watch"
         if "tailwind" in settings.INSTALLED_APPS:
-            commands["tailwind"] = f"django-admin tailwind start"
+            commands["tailwind"] = f"python -m django tailwind start"
         if "django_q" in settings.INSTALLED_APPS:
-            commands["qcluster"] = f"django-admin qcluster"
+            commands["qcluster"] = f"python -m django qcluster"
 
         commands.update(app_settings.WORK)
         commands["runserver"] = commands["runserver"].format(address=address)

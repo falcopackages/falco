@@ -61,6 +61,7 @@ dependencies = [
   "heroicons[django]",
   "django-template-partials",
   "django-extensions",
+  "Werkzeug",
   "django_htmx",
   "django-allauth",
   "pre-commit",
