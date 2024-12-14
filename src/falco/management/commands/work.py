@@ -42,6 +42,10 @@ class Command(BaseCommand):
             commands["tailwind"] = f"python -m django tailwind start"
         if "django_q" in settings.INSTALLED_APPS:
             commands["qcluster"] = f"python -m django qcluster"
+        if "django_tasks.backends.database" in settings.INSTALLED_APPS:
+            commands["worker"] = f"python -m django db_worker"
+        if "django.tasks.backends.database" in settings.INSTALLED_APPS:
+            commands["worker"] = f"python -m django db_worker"
 
         commands.update(app_settings.WORK)
         commands["runserver"] = commands["runserver"].format(address=address)
