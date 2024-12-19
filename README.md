@@ -1,12 +1,9 @@
 # Falco
 
-
 > [!IMPORTANT]
 > Work in progress, not ready, not released yet, currently this is the place to go https://github.com/falcopackages/falco-cli
 
-
-
-**An opinionated toolkit for building web apps faster with Django**
+**An opinionated toolkit for a better Django developer experience**
 
 <img align="right" width="170" height="150" src="https://raw.githubusercontent.com/falcopackages/falco/refs/heads/main/docs/_static/falco-logo.svg">
 
