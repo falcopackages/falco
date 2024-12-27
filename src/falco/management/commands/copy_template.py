@@ -54,7 +54,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "source",
             type=str,
-            help="The path to the template to copy, e.g. 'allauth/account/login.html'",
+            help="The path to the template to copy, e.g. 'account/login.html' for the allauth login template",
         )
         parser.add_argument(
             "destination",
