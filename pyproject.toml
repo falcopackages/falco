@@ -1,10 +1,10 @@
 [build-system]
 build-backend = "hatchling.build"
-
 requires = [ "hatchling>=1.26.1" ]
 
 [project]
 name = "falco-app"
+version = "0.3.5"
 description = "Falco is a toolkit to build web apps with django faster."
 readme = "README.md"
 keywords = [
@@ -36,27 +36,15 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dynamic = [ "version" ]
 dependencies = [ "django", "httpx", "parso", "rich" ]
-optional-dependencies = { filters = [ "django-filter" ], ui = [ "falco-ui" ], all = [ "django-filter", "falco-ui" ] }
 
 urls.Documentation = "https://github.com/falcopackages/falco#readme"
 urls.Issues = "https://github.com/falcopackages/falco/issues"
 urls.Source = "https://github.com/falcopackages/falco"
 
-[tool.hatch.env]
-requires = [
-  "hatch-pip-compile>=1.11.2",
-]
 
-[tool.hatch.build.targets.wheel]
-packages = [
-  "src/falco",
-]
-
-[tool.hatch.envs.default]
-features = [ "all" ]
-dependencies = [
+[dependency-groups]
+dev = [
   "falco-cli==0.27.0a2",
   "heroicons[django]",
   "django-template-partials",
@@ -69,25 +57,9 @@ dependencies = [
   "pytest-django",
   "pytest-xdist",
   "pyproject-fmt",
+  "ipython>=8.31.0",
 ]
-pip-compile-constraint = "default"
-pip-compile-installer = "uv"
-pip-compile-resolver = "uv"
-type = "pip-compile"
-lock-filename = "requirements.txt"
-
-[tool.hatch.version]
-path = "src/falco/__about__.py"
-
-[tool.hatch.envs.types]
-extra-dependencies = [
-  "mypy>=1.0.0",
-]
-[tool.hatch.envs.types.scripts]
-check = "mypy --install-types --non-interactive {args:src/falco_app tests}"
-
-[tool.hatch.envs.docs]
-dependencies = [
+docs = [
   "sphinx",
   "sphinx-autobuild",
   "myst-parser",
@@ -97,12 +69,12 @@ dependencies = [
   "sphinx-copybutton",
   "sphinx-togglebutton",
   "sphinxcontrib-mermaid",
-  "jupyter-sphinx",
-  "ipykernel",
-  "sphinx-github-changelog",
+  "sphinx-exec-code",
   "sphinx-docsearch",
 ]
-lock-filename = "docs/requirements.txt"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/falco"]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "demo.settings"

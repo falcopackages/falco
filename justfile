@@ -3,32 +3,35 @@ _default:
     @just --list
 
 @install:
-    hatch run python --version
+    uv sync
 
 # Install dependencies
 @bootstrap:
-    hatch env create
+    just install
 
 @clean:
-    hatch env prune
+    rm -rf .venv
 
 # Ugrade dependencies
-upgrade:
-    hatch run hatch-pip-compile --upgrade --all
+#upgrade:
+#    uv run hatch-pip-compile --upgrade --all
 
 # Run sphinx autobuild
 @docs-serve:
-    hatch run docs:sphinx-autobuild docs docs/_build/html --port 8002
+    uv run --group docs sphinx-autobuild docs docs/_build/html --port 8002
 
 # Run all formatters
 @fmt:
     just --fmt --unstable
-    hatch fmt --formatter
-    hatch run pyproject-fmt pyproject.toml
-    hatch run pre-commit run reorder-python-imports -a
+    uvx ruff format
+    uvx pyproject-fmt pyproject.toml
+    uvx pre-commit run reorder-python-imports -a
 
 @test:
-    hatch run pytest --ignore=tests/old
+    uv run pytest --ignore=tests/old
 
 @dj *ARGS:
-    cd demo && hatch run python manage.py {{ ARGS }}
+    cd demo && uv run python manage.py {{ ARGS }}
+
+@check-types:
+    uvx mypy --install-types --non-interactive {args:src/falco_app tests}
