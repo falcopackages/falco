@@ -1,19 +1,18 @@
 :description: Faster prototyping with basic CRUD (Create, Read, Update, Delete) python views and HTML templates for your django models.
 
-CRUD for your model
-===================
+crud
+====
 
 Accelerate prototyping with basic CRUD (Create, Read, Update, Delete) python views and HTML templates, enhanced with htmx and Tailwind CSS.
 
-CRUD
-----
+.. exec_code::
+    :language_output: shell
 
-.. cappa:: falco.management.commands.crud.Command
+    # --- hide: start ---
+    from falco.management.commands.crud import Command
 
-.. warning::
-
-    Make sure you have installed `falco-toolbox <https://github.com/tobi-de/falco-toolbox>`_ before running this command. If you are using a falco-generated project,
-    it will already be installed.
+    Command().print_help("manage.py", "crud")
+    #hide:toggle
 
 This command generates htmx-powered create, read, update, and delete views for your model. It follows a similar idea
 as `neapolitan <https://github.com/carltongibson/neapolitan>`_, but with a completely different approach. Instead of inheriting
