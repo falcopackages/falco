@@ -27,6 +27,3 @@ def simple_progress(description: str, display_text="[progress.description]{task.
         progress.stop()
 
 
-def clean_git_repo() -> bool:
-    result = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=False)  # noqa
-    return result.stdout.strip() == ""

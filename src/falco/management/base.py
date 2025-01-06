@@ -1,9 +1,9 @@
+import subprocess
 from pathlib import Path
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.core.management.base import CommandError
-from falco.utils import clean_git_repo
 
 
 def get_apps_dir() -> Path:
@@ -27,7 +27,9 @@ class CleanRepoOnlyCommand(BaseCommand):
 
     def handle(self, *args, **options):
         allow_dirty = options["allow_dirty"]
-        if not clean_git_repo() and not allow_dirty:
+        result = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=False)
+        git_repo_clean = result.stdout.strip() == ""
+        if not git_repo_clean and not allow_dirty:
             msg = "Git repo is not clean, clean or stash away changes before running this command"
             raise CommandError(msg)
         return super().handle(*args, **options)

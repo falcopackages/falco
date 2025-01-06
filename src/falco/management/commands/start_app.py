@@ -2,8 +2,8 @@ from pathlib import Path
 
 import parso
 from django.conf import settings
-from django.core.management import call_command
 from django.core.management import CommandError
+from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from falco.management.base import get_apps_dir
 from falco.utils import run_python_formatters

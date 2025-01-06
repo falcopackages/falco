@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from django.conf import settings
 from django.contrib.staticfiles import finders
 from django.http import FileResponse
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils import timezone
 from django.views.decorators.cache import cache_control
@@ -14,7 +15,7 @@ from falco.conf import app_settings
 from falco.decorators import login_not_required
 
 if TYPE_CHECKING:
-    from django.http import HttpRequest, HttpResponse
+    from django.http import HttpRequest
 
 
 @require_GET

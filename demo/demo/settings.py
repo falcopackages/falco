@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     "heroicons",
     "template_partials",
     "django_htmx",
-    "falco_ui",
     "falco",
     "demo.books",
 ]
