@@ -6,7 +6,7 @@ from falco.types import AuthenticatedHttpRequest
 {% else %}
 from falco.types import HttpRequest
 {% endif %}
-
+from django.contrib import messages
 from django.urls import reverse
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -57,6 +57,7 @@ def process_{{ view_name_prefix }}form(request: HttpRequest, {{ model.lookup_fie
     form = {{model.name}}Form(request.POST or None, instance=instance) {% endif %}
     if request.method == "POST" and form.is_valid():
         form.save()
+        messages.success(request, "{{ model.verbose_name_plural|capfirst }} saved successfully")
         return redirect(reverse("{{app_label}}:{{detail_view_name}}", args=({{ model.lookup_field }},)) if {{ model.lookup_field }} else reverse("{{app_label}}:{{ list_view_name }}"))
     return TemplateResponse(
         request,
