@@ -20,6 +20,10 @@ _default:
 @docs-serve:
     uv run --group docs sphinx-autobuild docs docs/_build/html --port 8002
 
+# Generate docs requirements.txt file
+@docs-lock *ARGS:
+    uv export --group docs --no-emit-project --output-file=docs/requirements.txt --no-dev {{ ARGS }}
+
 # Run all formatters
 @fmt:
     just --fmt --unstable
