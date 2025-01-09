@@ -3,7 +3,14 @@
 work
 ====
 
-.. cappa:: falco.management.commands.Work
+.. exec_code::
+    :language_output: shell
+
+    # --- hide: start ---
+    from falco.management.commands.crud import Command
+
+    Command().print_help("manage.py", "work")
+    #hide:toggle
 
 
 This command allows you to run multiple commands simultaneously. Typically, when working with a large or growing django project, you

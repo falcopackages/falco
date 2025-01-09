@@ -29,51 +29,6 @@ accessible and you can update it as you see fit. The idea is to accelerate proje
 
 .. If you want to see an example of the generated code, check out the `source code of the demo project <https://github.com/Tobi-De/falco/tree/main/demo/myjourney/entries>`_.
 
-Configuration
-^^^^^^^^^^^^^
-
-There are some options that you may want to set each time you generate ``CRUD`` views for a model. For instance, most of your views might require user
-login, or you might have a specific set of HTML templates that you use every time you run the command. Typing the same options repeatedly can be tedious.
-For such scenarios, some of the CLI options can be configured via the ``pyproject.toml`` file.
-
-Here is an example illustrating all available configurations:
-
-.. tabs::
-
-    .. tab:: ``pyproject.toml``
-
-        .. code-block:: toml
-
-            [tool.falco.crud]
-            utils-path = "apps_dir/core"
-            blueprints = "blueprints"
-            login-required = true
-            skip-git-check = true
-            always-migrate = true
-
-        .. note::
-
-            All options are optional.
-
-    .. tab:: description
-
-        .. admonition:: Keys description
-            :class: note
-
-            **utils-path**: This will be written by the ``install-crud-utils`` command. Unless you are changing where the utils are installed, you don't need to worry about this.
-
-            **blueprints**: If you are using custom blueprints for your ``html``, set the path here. It works exactly the same as the equivalent CLI option.
-
-            **login-required**: Always generate views that are decorated with the ``login_required`` decorator.
-
-            **skip-git-check**: (Not recommended) This option is for those who like to live dangerously. It will always skip the git check.
-
-            **always-migrate**: This option can only be set in the ``pyproject.toml`` file. My current workflow is to create a new app, add fields to a model and then run ``crud``.
-            I often forget to ``makemigrations`` and ``migrate``. This can cause the ``admin`` generation code to fail. With this option set, the ``crud`` command will first try to
-            run ``makemigrations`` and ``migrate``. If either of these operations fails, the command will stop and print the error.
-
-
-
 
 Python code
 ^^^^^^^^^^^
@@ -87,12 +42,12 @@ For the sake brevity, I'll only show an example of what the ``urls.py`` file mig
 
 .. code-block:: bash
 
-    falco crud entry.entries
+    python -m myproject entry.entries
 
 .. literalinclude:: /_static/snippets/urls.py
 
 As you can see, the convention is quite simple: ``<model_name_lower>_<operation>``. Note that if you don't specify the model name and run
-``falco crud entries``, the same code with the described conventions will be generated for all the models in the ``entries`` app.
+``python -m myproject entries``, the same code with the described conventions will be generated for all the models in the ``entries`` app.
 
 Now, if you're anything like me, the code above might have made you cringe due to the excessive repetitions of the word ``entry``.
 This wouldn't have been the case if the model was called ``Category``, for example. For these specific cases, there is an ``--entry-point`` option.
@@ -101,7 +56,7 @@ Let's try it.
 
 .. code-block:: bash
 
-    falco crud entries.entry --entry-point
+    python -m myproject entries.entry --entry-point
 
 .. admonition:: Oops, I made a mistake
     :class: tip dropdown
@@ -223,11 +178,11 @@ Some usage examples.
 
 .. code:: bash
 
-    $ falco crud entries.entry
-    $ falco crud entries
-    $ falco crud entries.entry -e="secret_field1" -e="secret_field2"
-    $ falco crud entries.entry --only-html
-    $ falco crud entries.entry --only-python
-    $ falco crud entries.entry --entry-point
-    $ falco crud entries.entry --entry-point --login
-    $ falco crud entries.entry --blueprints /path/to/blueprints
+    $ python -m myproject entries.entry
+    $ python -m myproject entries
+    $ python -m myproject entries.entry -e="secret_field1" -e="secret_field2"
+    $ python -m myproject entries.entry --only-html
+    $ python -m myproject entries.entry --only-python
+    $ python -m myproject entries.entry --entry-point
+    $ python -m myproject entries.entry --entry-point --login
+    $ python -m myproject entries.entry --blueprints /path/to/blueprints

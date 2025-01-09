@@ -3,11 +3,14 @@
 rm_migrations
 =============
 
-.. important::
-    Unless you know what you're doing, both of these commands should not be used once your project has gone live.
-    In other words, they become essentially useless once real users start interacting with your application.
+.. exec_code::
+    :language_output: shell
 
-.. cappa:: falco.management.commands.RmMigrations
+    # --- hide: start ---
+    from falco.management.commands.crud import Command
+
+    Command().print_help("manage.py", "rm_migrations")
+    #hide:toggle
 
 .. warning::
    This command will delete all your migrations files, be sure to commit your changes before running this command.

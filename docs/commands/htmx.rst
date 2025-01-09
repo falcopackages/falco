@@ -3,7 +3,14 @@
 htmx
 ====
 
-.. cappa:: falco.management.commands.Htmx
+.. exec_code::
+    :language_output: shell
+
+    # --- hide: start ---
+    from falco.management.commands.crud import Command
+
+    Command().print_help("manage.py", "htmx")
+    #hide:toggle
 
 Download the htmx javascript library. You won’t have to download htmx or its extensions often but at least if you need it, I think this
 is an easy way to get the file available locally.

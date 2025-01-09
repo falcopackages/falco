@@ -6,7 +6,14 @@ the command without specifying any arguments, it will list all the available ext
 Similar to the `htmx` commands, this will also use your ``pyproject.toml`` file if it's found. However,
 it's solely for downloading the extensions file next to your ``htmx.min.js`` file, in case no path was specified in the command.
 
-.. cappa:: falco.management.commands.HtmxExtension
+.. exec_code::
+    :language_output: shell
+
+    # --- hide: start ---
+    from falco.management.commands.crud import Command
+
+    Command().print_help("manage.py", "htmx_ext")
+    #hide:toggle
 
 **Example**
 

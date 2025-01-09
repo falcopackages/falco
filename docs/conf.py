@@ -36,7 +36,7 @@ extensions = [
     "sphinx_copybutton",
     "sphinx_togglebutton",
     "sphinxcontrib.mermaid",
-    "sphinx_docsearch",
+    # "sphinx_docsearch",
     "sphinx_exec_code",
 ]
 todo_include_todos = True
