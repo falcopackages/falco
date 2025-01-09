@@ -9,6 +9,7 @@ Falco Application
 .. toctree::
    :hidden:
 
+   Project Home <https://falcoproject.com>
    install
    commands/index
    views
@@ -19,4 +20,3 @@ Falco Application
    license
    changelog
    codeofconduct
-   Project Home <https://falco.oluwatobi.dev>
